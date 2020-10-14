@@ -3,6 +3,9 @@ package com.blockchain.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @author 听取WA声一片
+ */
 @SpringBootApplication
 public class BackendApplication {
 
