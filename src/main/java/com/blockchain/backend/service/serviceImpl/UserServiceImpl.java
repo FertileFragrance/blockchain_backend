@@ -8,6 +8,11 @@ import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import java.util.List;
 
@@ -50,5 +55,45 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(users.get(0), newUserVO);
         return ResponseVO.buildSuccess("login success", newUserVO);
     }
+
+    //获取sha256
+    public static String getSHA256str(String str) {
+        MessageDigest messageDigest;
+        String encodeStr = "";
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = messageDigest.digest(str.getBytes("UTF-8"));
+            encodeStr = HexBin.encode(hash);
+        } catch (NoSuchAlgorithmException ne) {
+            ne.printStackTrace();
+        } catch (UnsupportedEncodingException ue) {
+            ue.printStackTrace();
+        }
+        return encodeStr;
+    }
+
+
+    //挖矿
+    public static boolean miningService(String blockHash, String[] blockData, int nonce) {
+        String nonceStr = Integer.toString(nonce);
+        StringBuilder newHash = new StringBuilder(nonceStr);
+        for (String str : blockData) {
+            newHash.append(str);
+        }
+        return blockHash.equals(getSHA256str(newHash.toString()));
+    }
+
+
+    //节点
+    public static void buildNode(){
+
+        }
+
+
+    //交易
+    public static String transactionService(String publicKey1, String publicKey){
+
+    }
+
 
 }
