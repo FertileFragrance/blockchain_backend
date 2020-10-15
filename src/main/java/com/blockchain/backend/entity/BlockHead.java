@@ -1,9 +1,16 @@
 package com.blockchain.backend.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
 /**
  * 块头
  * @author 听取WA声一片
  */
+@Getter
+@Setter
 public class BlockHead {
 
     /**
@@ -27,14 +34,20 @@ public class BlockHead {
     private int nonce;
 
     /**
+     * 当前区块参与的交易的集合
+     */
+    private List<Transaction> transactions;
+
+    /**
      * 交易数
      */
     private int transactionNumber;
 
-    public BlockHead(String previousBlockHashPointer, int nonce) {
+    public BlockHead(String previousBlockHashPointer, int nonce,List<Transaction>transactions) {
         this.previousBlockHashPointer = previousBlockHashPointer;
         this.nonce = nonce;
         this.transactionNumber = 0;
+        this.transactions=transactions;
     }
 
 }
