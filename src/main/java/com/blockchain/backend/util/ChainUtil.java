@@ -6,18 +6,18 @@ import com.blockchain.backend.entity.Block;
  * 管理Block的链，仅当作工具类使用
  * @author 听取WA声一片
  */
-public class Chain {
+public class ChainUtil {
 
     /**
      * 私有化构造方法，不允许创建实例
      */
-    private Chain() {
+    private ChainUtil() {
     }
 
     /**
      * 链的长度
      */
-    public static int chainSize = 0;
+    private static int chainSize = 0;
 
     /**
      * 链中已有的最后一个区块
@@ -26,22 +26,27 @@ public class Chain {
 
     /**
      * 挖到第一个区块时初始化链
+     * @param nonce 挖出的随机数
      */
-    public static void initChain(int nonce) {
+    private static Block initChain(int nonce) {
         Block block = new Block("I'm Genesis Block.", nonce);
         chainSize++;
         lastBlock = block;
+        return lastBlock;
     }
 
     /**
      * 将一个新挖出的区块加到链上
-     * @param previousBlockHashPointer 前一个区块的哈希指针
      * @param nonce 挖出的随机数
      */
-    public static void addToChain(String previousBlockHashPointer, int nonce) {
-        Block block = new Block(previousBlockHashPointer, nonce);
+    public static Block addToChain(int nonce) {
+        if (chainSize == 0) {
+            return initChain(nonce);
+        }
+        Block block = new Block(nonce);
         chainSize++;
         lastBlock = block;
+        return lastBlock;
     }
 
     /**

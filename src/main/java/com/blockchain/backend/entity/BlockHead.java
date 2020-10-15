@@ -1,16 +1,12 @@
 package com.blockchain.backend.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
 
 /**
  * 块头
  * @author 听取WA声一片
  */
 @Getter
-@Setter
 public class BlockHead {
 
     /**
@@ -21,7 +17,7 @@ public class BlockHead {
     /**
      * 前一个块的哈希指针
      */
-    private String previousBlockHashPointer;
+    private final String previousBlockHashPointer;
 
     /**
      * 时间戳，由获取系统时间得到
@@ -29,26 +25,19 @@ public class BlockHead {
     private final Long timeStamp = System.currentTimeMillis() / 1000;
 
     /**
-     *
      * 随机数
      */
-    private int nonce;
-
-    /**
-     * 当前区块参与的交易的集合
-     */
-    private List<Transaction> transactions;
+    private final int nonce;
 
     /**
      * 交易数
      */
     private int transactionNumber;
 
-    public BlockHead(String previousBlockHashPointer, int nonce,List<Transaction>transactions) {
+    public BlockHead(String previousBlockHashPointer, int nonce) {
         this.previousBlockHashPointer = previousBlockHashPointer;
         this.nonce = nonce;
         this.transactionNumber = 0;
-        this.transactions=transactions;
     }
 
 }

@@ -1,48 +1,54 @@
 package com.blockchain.backend.entity;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.List;
+import com.blockchain.backend.util.CalculateUtil;
+import com.blockchain.backend.util.ChainUtil;
+import lombok.Getter;
 
 /**
  * 链中的块
  * @author 听取WA声一片
  */
 @Getter
-@Setter
 public class Block {
 
     /**
      * 块头
      */
-    private BlockHead blockHead;
+    private final BlockHead blockHead;
 
 
     /**
      * 当前区块的哈希指针
      */
-    private String currentBlockHashPointer;
+    private final String currentBlockHashPointer;
 
     /**
      * merkle树
      */
+    private final MerkleTree merkleTree;
 
-    private MerkleTree merkleTree;
-
-    public Block(String previousBlockHashPointer, int nonce,List<Transaction>transactions) {
-        this.blockHead = new BlockHead(previousBlockHashPointer, nonce,transactions);
+    /**
+     * 当且仅当增加创始区块时会调用此构造方法
+     * @param previousBlockHashPointer 前一个区块的哈希指针，是个定值
+     * @param nonce 挖出的随机数
+     */
+    public Block(String previousBlockHashPointer, int nonce) {
+        this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
         this.merkleTree = new MerkleTree();
-        /**
-         * TODO 根据算法计算当前区块的哈希指针并存入this.currentBlockHashPointer
-         */
-
-        this.currentBlockHashPointer=calculateHash(previousBlockHashPointer,nonce,this.blockHead.getTimeStamp());
-
+        this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
+                + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
     }
 
-    public String calculateHash(String previousBlockHashPointer, int nonce,long timestamp){
-        String hash=Util.applysha256(previousBlockHashPointer+Long.toString(timestamp)+Integer.toString(nonce));
-        return hash;
+    /**
+     * 增加普通区块时调用此构造方法
+     * @param nonce 挖出的随机数
+     */
+    public Block(int nonce) {
+        String previousBlockHashPointer = ChainUtil.getLastBlock().currentBlockHashPointer;
+        this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
+        this.merkleTree = new MerkleTree();
+        this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
+                + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
     }
 
 }
