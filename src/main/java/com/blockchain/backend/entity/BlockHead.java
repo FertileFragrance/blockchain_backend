@@ -29,6 +29,7 @@ public class BlockHead {
     private final Long timeStamp = System.currentTimeMillis() / 1000;
 
     /**
+     *
      * 随机数
      */
     private int nonce;

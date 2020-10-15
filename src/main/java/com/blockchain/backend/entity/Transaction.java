@@ -11,6 +11,7 @@ public class Transaction {
     //交易金额
     private int amount;
 
+
     public Transaction(String id,String sender,String recipient,int amount){
         this.id=id;
         this.sender=sender;
