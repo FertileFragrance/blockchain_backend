@@ -2,6 +2,7 @@ package com.blockchain.backend.entity;
 
 import java.security.MessageDigest;
 //工具类
+
 public class Util {
     //应用sha256算法，根据输入随机生成一个哈希值
     public static String applysha256(String str){
