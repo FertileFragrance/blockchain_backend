@@ -26,6 +26,7 @@ public class Block {
     /**
      * merkle树
      */
+
     private MerkleTree merkleTree;
 
     public Block(String previousBlockHashPointer, int nonce,List<Transaction>transactions) {
