@@ -18,4 +18,7 @@ public class Transaction {
         this.recipient=recipient;
         this.amount=amount;
     }
+    public String toString(){
+        return "id: "+this.id+"   sender: "+this.sender+"    recipient: "+this.recipient +"    amount: "+Integer.toString(amount);
+    }
 }
