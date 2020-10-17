@@ -1,12 +1,12 @@
 package com.blockchain.backend.entity;
 
-import lombok.Getter;
+import lombok.Data;
 
 /**
  * 块头
  * @author 听取WA声一片
  */
-@Getter
+@Data
 public class BlockHead {
 
     /**
@@ -22,12 +22,12 @@ public class BlockHead {
     /**
      * 时间戳，由获取系统时间得到
      */
-    private final Long timeStamp = System.currentTimeMillis() / 1000;
+    private final long timeStamp = System.currentTimeMillis() / 1000;
 
     /**
      * 随机数
      */
-    private final int nonce;
+    private final long nonce;
 
     /**
      * 交易数
@@ -37,7 +37,7 @@ public class BlockHead {
     public BlockHead(String previousBlockHashPointer, int nonce) {
         this.previousBlockHashPointer = previousBlockHashPointer;
         this.nonce = nonce;
-        this.transactionNumber = 0;
+        this.transactionNumber = 1;
     }
 
 }

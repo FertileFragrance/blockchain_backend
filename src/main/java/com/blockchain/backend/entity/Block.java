@@ -12,6 +12,11 @@ import lombok.Getter;
 public class Block {
 
     /**
+     * 魔数
+     */
+    private final int magicNumber = 0xD9B4BEF9;
+
+    /**
      * 块头
      */
     private final BlockHead blockHead;
@@ -49,6 +54,15 @@ public class Block {
         this.merkleTree = new MerkleTree();
         this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
                 + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
+    }
+
+    /**
+     * 增加交易记录
+     * @param transaction 交易
+     */
+    public void addTransaction(Transaction transaction) {
+        this.merkleTree.insertTransaction(transaction);
+        this.blockHead.setTransactionNumber(this.blockHead.getTransactionNumber() + 1);
     }
 
 }

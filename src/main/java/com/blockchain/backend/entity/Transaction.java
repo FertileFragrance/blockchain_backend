@@ -1,5 +1,10 @@
 package com.blockchain.backend.entity;
 
+/**
+ * 交易
+ * @author 记得写上
+ * TODO 完成此类后删除此行，注意使用javadoc注释
+ */
 public class Transaction {
 
         //交易的唯一标识
@@ -18,7 +23,16 @@ public class Transaction {
         this.recipient=recipient;
         this.amount=amount;
     }
-    public String toString(){
-        return "id: "+this.id+"   sender: "+this.sender+"    recipient: "+this.recipient +"    amount: "+Integer.toString(amount);
+
+    public Transaction() {
     }
+
+    /**
+     * 生成哈希值
+     * @return 哈希字符串
+     */
+    public String generateHash() {
+        return "hash";
+    }
+
 }
