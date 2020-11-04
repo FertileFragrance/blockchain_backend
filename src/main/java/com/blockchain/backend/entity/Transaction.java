@@ -7,6 +7,7 @@ package com.blockchain.backend.entity;
  */
 public class Transaction {
 
+        //暂时定义发起者使用现金交换数字货币
         //交易的唯一标识
     private  String id;
     //交易发起者地址
@@ -25,6 +26,38 @@ public class Transaction {
     }
 
     public Transaction() {
+        if (scripSig(sender, recipient)) startTransaction();
+        else System.out.println("it's a illegal transaction");
+    }
+
+    /**
+     * 私钥签名方法
+     */
+    private boolean scripSig(String sender, String recipient) {
+        return true;
+    }
+
+
+
+
+    /**
+     * 统筹币值，进行各条链上币的转移
+     */
+
+    private void startTransaction(){
+        CoinBag forTransaction = new CoinBag();
+        forTransaction.countCoin(recipient, Integer.toString(amount));
+        int counter = 0;
+        String coinsSingleChain;
+        for (String coinsAddress: forTransaction.transactionList) {
+            if (counter%2 == 0) {
+                coinsSingleChain = coinsAddress;
+            } else {
+                //Block.merkleTree.insertTransaction(sender, recipient, coinsSingleChain, coinsAddress);
+            }
+            counter ++;
+        }
+        System.out.println("the transaction is finished");
     }
 
     /**

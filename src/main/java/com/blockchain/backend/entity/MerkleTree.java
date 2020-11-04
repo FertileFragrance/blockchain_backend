@@ -35,18 +35,24 @@ public class MerkleTree {
         this.treeHeight = 1;
     }
 
+//    /**
+//     * 新增交易记录
+//     * @param transaction 新增的交易
+//     */
+//    public void insertTransaction(Transaction transaction) {
+//        this.transactions.add(transaction);
+//        this.updateTreeHeight();
+//        TreeNode[] treeNodes = new TreeNode[this.transactions.size()];
+//        for (int i = 0; i < treeNodes.length; i++) {
+//            treeNodes[i] = new TreeNode(CalculateUtil.applySha256(this.transactions.get(i).generateHash()));
+//        }
+//        this.buildTree(treeNodes);
+//    }
+
     /**
-     * 新增交易记录
-     * @param transaction 新增的交易
+     * 新增交易记录 new edition
      */
-    public void insertTransaction(Transaction transaction) {
-        this.transactions.add(transaction);
-        this.updateTreeHeight();
-        TreeNode[] treeNodes = new TreeNode[this.transactions.size()];
-        for (int i = 0; i < treeNodes.length; i++) {
-            treeNodes[i] = new TreeNode(CalculateUtil.applySha256(this.transactions.get(i).generateHash()));
-        }
-        this.buildTree(treeNodes);
+    public void insertTransaction(String sender, String recipient, String amount, String chain) {
     }
 
     /**

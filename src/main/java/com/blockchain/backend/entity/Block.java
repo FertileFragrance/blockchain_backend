@@ -9,7 +9,7 @@ import lombok.Getter;
  * @author 听取WA声一片
  */
 @Getter
-public class Block {
+public class Block extends GodBlock {
 
     /**
      * 魔数
@@ -30,7 +30,15 @@ public class Block {
     /**
      * merkle树
      */
-    private final MerkleTree merkleTree;
+    protected final MerkleTree merkleTree;
+
+    /**
+     *
+     */
+    String chainName ;
+
+
+
 
     /**
      * 当且仅当增加创始区块时会调用此构造方法
@@ -57,12 +65,28 @@ public class Block {
     }
 
     /**
-     * 增加交易记录
-     * @param transaction 交易
+     * 通过当前区块hash获取当前区块的构造方法
      */
-    public void addTransaction(Transaction transaction) {
-        this.merkleTree.insertTransaction(transaction);
-        this.blockHead.setTransactionNumber(this.blockHead.getTransactionNumber() + 1);
+    public Block(String currentBlockHashPointer){
+        //无用nonce
+        int nonce = 0;
+        this.blockHead = new BlockHead(presentBlockHash, nonce);
+        this.merkleTree = new MerkleTree();
+        this.currentBlockHashPointer = currentBlockHashPointer;
     }
+
+    /**
+     * insertTransaction操作Transaction类里实现
+     */
+//    /**
+//     * 增加交易记录
+//     * @param transaction 交易
+//     */
+//    public void addTransaction(Transaction transaction) {
+//        this.merkleTree.insertTransaction(transaction);
+//        this.blockHead.setTransactionNumber(this.blockHead.getTransactionNumber() + 1);
+//    }
+
+
 
 }
