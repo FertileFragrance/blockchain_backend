@@ -1,5 +1,7 @@
 package com.blockchain.backend.entity;
 
+import com.blockchain.backend.entity.chain.block.tree.MerkleTree;
+
 public class GodBlock {
 
     /**

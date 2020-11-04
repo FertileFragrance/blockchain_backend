@@ -1,7 +1,8 @@
 package com.blockchain.backend;
 
-import com.blockchain.backend.entity.Block;
-import com.blockchain.backend.util.ChainUtil;
+import com.blockchain.backend.entity.chain.BlockChain;
+import com.blockchain.backend.entity.chain.block.Block;
+import com.blockchain.backend.util.ChainsUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -10,17 +11,17 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
-    }
-
-    @Test
-    void hashPointer() {
-        Block block1 = ChainUtil.addToChain(123);
-        Block block2 = ChainUtil.addToChain(36975);
-        System.out.println(block1.getBlockHead().getPreviousBlockHashPointer());
-        System.out.println(block1.getCurrentBlockHashPointer());
-        System.out.println(block2.getBlockHead().getPreviousBlockHashPointer());
-        System.out.println(block2.getCurrentBlockHashPointer());
-        assert block1.getCurrentBlockHashPointer().equals(block2.getBlockHead().getPreviousBlockHashPointer());
+        BlockChain chain1 = new BlockChain(0);
+        BlockChain chain2 = new BlockChain(1);
+        ChainsUtil.updateChains();
+        Block block11 = chain1.getLastBlock();
+        Block block21 = chain2.getLastBlock();
+        ChainsUtil.updateChains();
+        Block block12 = chain1.getLastBlock();
+        Block block22 = chain2.getLastBlock();
+        assert ChainsUtil.getBlockchains().size() == 2;
+        assert block11.getCurrentBlockHashPointer().equals(block12.getBlockHead().getPreviousBlockHashPointer());
+        assert block21.getCurrentBlockHashPointer().equals(block22.getBlockHead().getPreviousBlockHashPointer());
     }
 
 }

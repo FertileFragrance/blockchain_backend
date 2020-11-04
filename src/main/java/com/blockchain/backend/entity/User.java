@@ -13,6 +13,10 @@ public class User {
     private String username;
     private String password;
 
+    private String privateKey;
+    private String publicKey;
+    // private String
+
 
     public User(String username, String password) {
         this.username = username;
