@@ -22,4 +22,25 @@ public interface UserService {
      */
     ResponseVO login(UserVO userVO);
 
+    /**
+     * 用户挖矿
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO mine(UserVO userVO);
+
+    /**
+     * 用户查询余额
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO queryBalance(UserVO userVO);
+
+    /**
+     * 用户增加密钥对
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO addKeys(UserVO userVO);
+
 }

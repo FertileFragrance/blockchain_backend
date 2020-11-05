@@ -59,7 +59,6 @@ public class CalculateUtil {
 
     /**
      * 运用椭圆曲线算法生成私钥和公钥
-     *
      * @return 私钥和公钥
      */
     public static Pair<String, Pair<String, String>> generateKeys() {

@@ -5,7 +5,7 @@ public class Trader {
     /**
      * 钱包
      */
-    CoinBag coinBag;
+    BitcoinWallet coinBag;
 
     /**
      * id

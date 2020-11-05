@@ -1,23 +1,37 @@
 package com.blockchain.backend.entity;
 
+import lombok.Getter;
+import org.springframework.data.util.Pair;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 钱包：存放了所有的coins（链地址），同时拥有清算货币的方法
+ * 钱包，存放用户私钥
  * @author OD
  */
-public class CoinBag {
+@Getter
+public class BitcoinWallet {
 
     /**
-     * 包含了该用户所有的拥有货币所有权的链的地址（关于地址的说法存疑）
+     * 私钥
      */
-    protected String[] coinBagAddress;
+    private final ArrayList<String> privateKeys = new ArrayList<>();
 
+    /**
+     * 公钥，由私钥生成
+     */
+    private final ArrayList<Pair<String, String>> publicKeys = new ArrayList<>();
+
+    /**
+     * 比特币地址，由公钥生成
+     */
+    private final ArrayList<String> bitcoinAddresses = new ArrayList<>();
 
     /**
      * 统筹后将用于交易的链表，[币数][链址][币数][链址][币数]......
      */
-    protected List<String> transactionList;
+    private List<String> transactionList;
 
     /**
      * 钱包统筹货币的方法
@@ -25,7 +39,7 @@ public class CoinBag {
     protected void countCoin(String traderAddress, String tradeValue) {
         int coinsTraded = Integer.parseInt(tradeValue);
         int coinsSingleChain;
-        for (String chainAddress : coinBagAddress) {
+        for (String chainAddress : bitcoinAddresses) {
             coinsSingleChain = coinsCheck(chainAddress);
 
             if (coinsSingleChain > 0 && coinsTraded > 0) {

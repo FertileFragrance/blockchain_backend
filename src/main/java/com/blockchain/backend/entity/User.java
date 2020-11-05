@@ -17,27 +17,15 @@ public class User {
     private String password;
 
     /**
-     * 私钥
+     * 比特币钱包
      */
-    private final String privateKey;
-
-    /**
-     * 公钥，由私钥生成
-     */
-    private final Pair<String, String> publicKey;
-
-    /**
-     * 比特币地址，由公钥生成
-     */
-    private final String bitcoinAddress;
+    private final BitcoinWallet wallet;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        Pair<String, Pair<String, String>> keys = CalculateUtil.generateKeys();
-        this.privateKey = keys.getFirst();
-        this.publicKey = keys.getSecond();
-        this.bitcoinAddress = CalculateUtil.generateAddress(this.publicKey);
+        this.wallet = new BitcoinWallet();
+        this.generateNewKeysAndAddress();
     }
 
     public User() {
@@ -73,6 +61,20 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public BitcoinWallet getWallet() {
+        return this.wallet;
+    }
+
+    /**
+     * 生成新的私钥、公钥和地址并加到钱包中
+     */
+    public void generateNewKeysAndAddress() {
+        Pair<String, Pair<String, String>> keys = CalculateUtil.generateKeys();
+        this.wallet.getPrivateKeys().add(keys.getFirst());
+        this.wallet.getPublicKeys().add(keys.getSecond());
+        this.wallet.getBitcoinAddresses().add(CalculateUtil.generateAddress(keys.getSecond()));
     }
 
 }
