@@ -1,4 +1,4 @@
-package com.blockchain.backend.entity;
+package com.blockchain.backend.entity.chain.block.tree.node;
 
 import lombok.Data;
 
@@ -16,6 +16,11 @@ public class TreeNode {
 
     public TreeNode(String hashValue) {
         this.hashValue = hashValue;
+    }
+
+    @Override
+    public TreeNode clone() {
+        return new TreeNode(this.hashValue);
     }
 
 }

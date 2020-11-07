@@ -1,18 +1,17 @@
 package com.blockchain.backend.service.serviceImpl;
 
 import com.blockchain.backend.dao.UserMapper;
+import com.blockchain.backend.entity.BitcoinWallet;
 import com.blockchain.backend.entity.User;
+import com.blockchain.backend.entity.chain.BlockChain;
+import com.blockchain.backend.entity.chain.block.Block;
 import com.blockchain.backend.service.UserService;
+import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import java.util.List;
 
@@ -56,44 +55,31 @@ public class UserServiceImpl implements UserService {
         return ResponseVO.buildSuccess("login success", newUserVO);
     }
 
-//    //获取sha256
-//    public static String getSHA256str(String str) {
-//        MessageDigest messageDigest;
-//        String encodeStr = "";
-//        try {
-//            messageDigest = MessageDigest.getInstance("SHA-256");
-//            byte[] hash = messageDigest.digest(str.getBytes("UTF-8"));
-//            encodeStr = HexBin.encode(hash);
-//        } catch (NoSuchAlgorithmException ne) {
-//            ne.printStackTrace();
-//        } catch (UnsupportedEncodingException ue) {
-//            ue.printStackTrace();
-//        }
-//        return encodeStr;
-//    }
-//
-//
-//    //挖矿
-//    public static boolean miningService(String blockHash, String[] blockData, int nonce) {
-//        String nonceStr = Integer.toString(nonce);
-//        StringBuilder newHash = new StringBuilder(nonceStr);
-//        for (String str : blockData) {
-//            newHash.append(str);
-//        }
-//        return blockHash.equals(getSHA256str(newHash.toString()));
-//    }
-//
-//
-//    //节点
-//    public static void buildNode(){
-//
-//        }
-//
-//
-//    //交易
-//    public static String transactionService(String publicKey1, String publicKey){
-//
-//    }
+    @Override
+    public ResponseVO mine(UserVO userVO) {
+        // TODO
+        return null;
+    }
 
+    @Override
+    public ResponseVO queryBalance(UserVO userVO) {
+        // TODO
+        List<User> users = userMapper.findByUsername(userVO.getUsername());
+        assert users.size() == 1;
+        BitcoinWallet wallet = users.get(0).getWallet();
+        List<BlockChain> chains = ChainsUtil.getBlockchains();
+        for (BlockChain chain : chains) {
+
+        }
+        return null;
+    }
+
+    @Override
+    public ResponseVO addKeys(UserVO userVO) {
+        List<User> users = userMapper.findByUsername(userVO.getUsername());
+        assert users.size() == 1;
+        users.get(0).generateNewKeysAndAddress();
+        return ResponseVO.buildSuccess("addKeys success");
+    }
 
 }

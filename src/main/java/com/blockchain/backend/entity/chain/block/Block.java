@@ -1,7 +1,11 @@
-package com.blockchain.backend.entity;
+package com.blockchain.backend.entity.chain.block;
 
+import com.blockchain.backend.entity.chain.block.head.BlockHead;
+import com.blockchain.backend.entity.GodBlock;
+import com.blockchain.backend.entity.chain.BlockChain;
+import com.blockchain.backend.entity.chain.block.tree.MerkleTree;
+import com.blockchain.backend.entity.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.util.CalculateUtil;
-import com.blockchain.backend.util.ChainUtil;
 import lombok.Getter;
 
 /**
@@ -9,7 +13,7 @@ import lombok.Getter;
  * @author 听取WA声一片
  */
 @Getter
-public class Block {
+public class Block extends GodBlock {
 
     /**
      * 魔数
@@ -21,7 +25,6 @@ public class Block {
      */
     private final BlockHead blockHead;
 
-
     /**
      * 当前区块的哈希指针
      */
@@ -30,29 +33,35 @@ public class Block {
     /**
      * merkle树
      */
-    private final MerkleTree merkleTree;
+    protected final MerkleTree merkleTree;
+
+    /**
+     * 此区块所属的链
+     */
+    private final BlockChain belongingChain;
 
     /**
      * 当且仅当增加创始区块时会调用此构造方法
      * @param previousBlockHashPointer 前一个区块的哈希指针，是个定值
      * @param nonce 挖出的随机数
      */
-    public Block(String previousBlockHashPointer, int nonce) {
+    public Block(String previousBlockHashPointer, int nonce, BlockChain belongingChain) {
         this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
         this.merkleTree = new MerkleTree();
         this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
                 + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
+        this.belongingChain = belongingChain;
     }
 
     /**
      * 增加普通区块时调用此构造方法
-     * @param nonce 挖出的随机数
      */
-    public Block(int nonce) {
-        String previousBlockHashPointer = ChainUtil.getLastBlock().currentBlockHashPointer;
-        this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
-        this.merkleTree = new MerkleTree();
-        this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
+    public Block(BlockChain belongingChain) {
+        this.belongingChain = belongingChain;
+        Block lastBlock = this.belongingChain.getLastBlock();
+        this.blockHead = lastBlock.blockHead.clone(lastBlock.currentBlockHashPointer);
+        this.merkleTree = lastBlock.merkleTree.clone();
+        this.currentBlockHashPointer = CalculateUtil.applySha256(lastBlock.currentBlockHashPointer
                 + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
     }
 

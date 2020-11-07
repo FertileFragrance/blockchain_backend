@@ -4,6 +4,7 @@ import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.vo.ResponseVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +39,36 @@ public class UserController {
     @PostMapping("/login")
     public ResponseVO login(UserVO userVO) {
         return userService.login(userVO);
+    }
+
+    /**
+     * 处理用户挖矿请求
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    @PostMapping("/mine")
+    public ResponseVO mine(UserVO userVO) {
+        return userService.mine(userVO);
+    }
+
+    /**
+     * 处理用户查询余额请求
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    @GetMapping("/queryBalance")
+    public ResponseVO queryBalance(UserVO userVO) {
+        return userService.queryBalance(userVO);
+    }
+
+    /**
+     * 处理用户增加密钥请求
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    @PostMapping("/addKeys")
+    public ResponseVO addKeys(UserVO userVO) {
+        return userService.addKeys(userVO);
     }
 
 }
