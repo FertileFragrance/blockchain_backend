@@ -1,6 +1,6 @@
 package com.blockchain.backend.vo;
 
-import com.blockchain.backend.pojo.BitcoinWallet;
+import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import lombok.Data;
 
 /**

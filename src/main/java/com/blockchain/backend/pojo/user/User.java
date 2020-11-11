@@ -1,5 +1,6 @@
-package com.blockchain.backend.pojo;
+package com.blockchain.backend.pojo.user;
 
+import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.util.CalculateUtil;
 import lombok.Data;
 import org.springframework.data.util.Pair;

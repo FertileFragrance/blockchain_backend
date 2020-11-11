@@ -1,7 +1,7 @@
 package com.blockchain.backend.service.serviceImpl;
 
 import com.blockchain.backend.dao.UserMapper;
-import com.blockchain.backend.pojo.User;
+import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.pojo.chain.BlockChain;
 import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.util.ChainsUtil;
@@ -15,7 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import static com.blockchain.backend.pojo.User.FILEPATH_ROOT;
+import static com.blockchain.backend.pojo.user.User.FILEPATH_ROOT;
 
 /**
  * @author 听取WA声一片

@@ -1,4 +1,4 @@
-package com.blockchain.backend.pojo;
+package com.blockchain.backend.pojo.user.wallet;
 
 import lombok.Data;
 

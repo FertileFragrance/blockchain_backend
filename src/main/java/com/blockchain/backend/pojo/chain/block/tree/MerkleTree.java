@@ -43,9 +43,9 @@ public class MerkleTree {
 
     /**
      * 复制时调用此构造方法
-     * @param merkleRoot 上一个的根哈希
+     * @param merkleRoot   上一个的根哈希
      * @param transactions 上一个的交易集合
-     * @param treeHeight 上一个的高度
+     * @param treeHeight   上一个的高度
      */
     public MerkleTree(TreeNode merkleRoot, List<Transaction> transactions, int treeHeight) {
         this.merkleRoot = merkleRoot;
