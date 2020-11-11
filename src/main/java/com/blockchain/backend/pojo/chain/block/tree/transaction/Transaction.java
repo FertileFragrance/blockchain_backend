@@ -1,7 +1,7 @@
-package com.blockchain.backend.entity.chain.block.tree.transaction;
+package com.blockchain.backend.pojo.chain.block.tree.transaction;
 
 import com.alibaba.fastjson.JSON;
-import com.blockchain.backend.entity.chain.block.tree.transaction.inandout.*;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.*;
 import com.blockchain.backend.util.CalculateUtil;
 import com.blockchain.backend.util.ChainsUtil;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.blockchain.backend;
 
-import com.blockchain.backend.entity.chain.BlockChain;
-import com.blockchain.backend.entity.chain.block.Block;
+import com.blockchain.backend.pojo.chain.BlockChain;
+import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.util.ChainsUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

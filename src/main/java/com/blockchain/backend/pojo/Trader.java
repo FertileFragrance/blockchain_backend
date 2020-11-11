@@ -1,4 +1,6 @@
-package com.blockchain.backend.entity;
+package com.blockchain.backend.pojo;
+
+import com.blockchain.backend.pojo.BitcoinWallet;
 
 public class Trader {
 

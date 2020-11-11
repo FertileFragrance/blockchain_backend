@@ -1,8 +1,5 @@
 package com.blockchain.backend.entity;
 
-import com.blockchain.backend.util.CalculateUtil;
-import org.springframework.data.util.Pair;
-
 import javax.persistence.*;
 
 /**
@@ -16,20 +13,12 @@ public class User {
     private String username;
     private String password;
 
-    /**
-     * 比特币钱包
-     */
-    private final BitcoinWallet wallet;
-
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.wallet = new BitcoinWallet();
-        this.generateNewKeysAndAddress();
     }
 
     public User() {
-        throw new RuntimeException("Illegal user!");
     }
 
     @Id
@@ -61,20 +50,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public BitcoinWallet getWallet() {
-        return this.wallet;
-    }
-
-    /**
-     * 生成新的私钥、公钥和地址并加到钱包中
-     */
-    public void generateNewKeysAndAddress() {
-        Pair<String, Pair<String, String>> keys = CalculateUtil.generateKeys();
-        this.wallet.getPrivateKeys().add(keys.getFirst());
-        this.wallet.getPublicKeys().add(keys.getSecond());
-        this.wallet.getBitcoinAddresses().add(CalculateUtil.generateAddress(keys.getSecond()));
     }
 
 }

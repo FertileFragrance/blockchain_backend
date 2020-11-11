@@ -1,10 +1,9 @@
-package com.blockchain.backend.entity.chain.block;
+package com.blockchain.backend.pojo.chain.block;
 
-import com.blockchain.backend.entity.chain.block.head.BlockHead;
-import com.blockchain.backend.entity.GodBlock;
-import com.blockchain.backend.entity.chain.BlockChain;
-import com.blockchain.backend.entity.chain.block.tree.MerkleTree;
-import com.blockchain.backend.entity.chain.block.tree.transaction.Transaction;
+import com.blockchain.backend.pojo.chain.block.head.BlockHead;
+import com.blockchain.backend.pojo.chain.BlockChain;
+import com.blockchain.backend.pojo.chain.block.tree.MerkleTree;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.util.CalculateUtil;
 import lombok.Getter;
 
@@ -13,7 +12,7 @@ import lombok.Getter;
  * @author 听取WA声一片
  */
 @Getter
-public class Block extends GodBlock {
+public class Block {
 
     /**
      * 魔数

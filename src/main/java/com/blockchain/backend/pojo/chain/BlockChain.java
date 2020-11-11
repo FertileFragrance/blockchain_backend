@@ -1,10 +1,10 @@
-package com.blockchain.backend.entity.chain;
+package com.blockchain.backend.pojo.chain;
 
-import com.blockchain.backend.entity.chain.block.Block;
-import com.blockchain.backend.entity.chain.block.tree.MerkleTree;
-import com.blockchain.backend.entity.chain.block.tree.transaction.Transaction;
-import com.blockchain.backend.entity.chain.block.tree.transaction.inandout.TransactionInput;
-import com.blockchain.backend.entity.chain.block.tree.transaction.inandout.TransactionOutput;
+import com.blockchain.backend.pojo.chain.block.Block;
+import com.blockchain.backend.pojo.chain.block.tree.MerkleTree;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.TransactionInput;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.TransactionOutput;
 import com.blockchain.backend.util.ChainsUtil;
 
 import java.util.ArrayList;

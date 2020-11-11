@@ -1,7 +1,7 @@
-package com.blockchain.backend.entity.chain.block.tree;
+package com.blockchain.backend.pojo.chain.block.tree;
 
-import com.blockchain.backend.entity.chain.block.tree.node.TreeNode;
-import com.blockchain.backend.entity.chain.block.tree.transaction.Transaction;
+import com.blockchain.backend.pojo.chain.block.tree.node.TreeNode;
+import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.util.CalculateUtil;
 import lombok.Getter;
 

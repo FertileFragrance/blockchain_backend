@@ -1,5 +1,6 @@
 package com.blockchain.backend.vo;
 
+import com.blockchain.backend.pojo.BitcoinWallet;
 import lombok.Data;
 
 /**
@@ -11,5 +12,7 @@ public class UserVO {
     private Integer id;
     private String username;
     private String password;
+
+    private BitcoinWallet wallet;
 
 }

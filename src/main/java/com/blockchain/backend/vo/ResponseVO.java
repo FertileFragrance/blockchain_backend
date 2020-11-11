@@ -1,11 +1,13 @@
 package com.blockchain.backend.vo;
 
+import lombok.Getter;
 import lombok.ToString;
 
 /**
  * @author 听取WA声一片
  */
 @ToString
+@Getter
 public class ResponseVO {
 
     private Boolean isSuccess;

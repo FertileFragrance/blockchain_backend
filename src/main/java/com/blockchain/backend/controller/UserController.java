@@ -6,6 +6,7 @@ import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,7 +28,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @PostMapping("/register")
-    public ResponseVO register(UserVO userVO) {
+    public ResponseVO register(@RequestBody UserVO userVO) {
         return userService.register(userVO);
     }
 
@@ -37,7 +38,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @PostMapping("/login")
-    public ResponseVO login(UserVO userVO) {
+    public ResponseVO login(@RequestBody UserVO userVO) {
         return userService.login(userVO);
     }
 
@@ -47,7 +48,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @PostMapping("/mine")
-    public ResponseVO mine(UserVO userVO) {
+    public ResponseVO mine(@RequestBody UserVO userVO) {
         return userService.mine(userVO);
     }
 
@@ -57,7 +58,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @GetMapping("/queryBalance")
-    public ResponseVO queryBalance(UserVO userVO) {
+    public ResponseVO queryBalance(@RequestBody UserVO userVO) {
         return userService.queryBalance(userVO);
     }
 
@@ -67,7 +68,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @PostMapping("/addKeys")
-    public ResponseVO addKeys(UserVO userVO) {
+    public ResponseVO addKeys(@RequestBody UserVO userVO) {
         return userService.addKeys(userVO);
     }
 

@@ -1,6 +1,6 @@
 package com.blockchain.backend.util;
 
-import com.blockchain.backend.entity.chain.BlockChain;
+import com.blockchain.backend.pojo.chain.BlockChain;
 
 import java.util.ArrayList;
 import java.util.List;

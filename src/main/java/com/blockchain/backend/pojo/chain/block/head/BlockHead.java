@@ -1,4 +1,4 @@
-package com.blockchain.backend.entity.chain.block.head;
+package com.blockchain.backend.pojo.chain.block.head;
 
 import lombok.Data;
 

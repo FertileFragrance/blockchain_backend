@@ -1,10 +1,8 @@
 package com.blockchain.backend.service.serviceImpl;
 
 import com.blockchain.backend.dao.UserMapper;
-import com.blockchain.backend.entity.BitcoinWallet;
-import com.blockchain.backend.entity.User;
-import com.blockchain.backend.entity.chain.BlockChain;
-import com.blockchain.backend.entity.chain.block.Block;
+import com.blockchain.backend.pojo.User;
+import com.blockchain.backend.pojo.chain.BlockChain;
 import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
@@ -13,7 +11,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+
+import static com.blockchain.backend.pojo.User.FILEPATH_ROOT;
 
 /**
  * @author 听取WA声一片
@@ -31,27 +33,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO register(UserVO userVO) {
-        List<User> users = userMapper.findByUsername(userVO.getUsername());
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         if (users.size() > 0) {
             assert users.size() == 1;
             return ResponseVO.buildFailure("user exist");
         }
-        User user = new User(userVO.getUsername(), userVO.getPassword());
-        userMapper.save(user);
+        com.blockchain.backend.entity.User userEntity =
+                new com.blockchain.backend.entity.User(userVO.getUsername(), userVO.getPassword());
+        User userPojo = new User(userEntity.getUsername(), userEntity.getPassword());
+        userPojo.generateNewKeysAndAddress();
+        userPojo.serializeWallet();
+        userMapper.save(userEntity);
         UserVO newUserVO = new UserVO();
-        BeanUtils.copyProperties(user, newUserVO);
+        BeanUtils.copyProperties(userPojo, newUserVO);
         return ResponseVO.buildSuccess("register success", newUserVO);
     }
 
     @Override
     public ResponseVO login(UserVO userVO) {
-        List<User> users = userMapper.findByUsernameAndPassword(userVO.getUsername(), userVO.getPassword());
+        List<com.blockchain.backend.entity.User> users =
+                userMapper.findByUsernameAndPassword(userVO.getUsername(), userVO.getPassword());
         if (users.size() == 0) {
             return ResponseVO.buildFailure("user not found");
         }
         assert users.size() == 1;
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
         UserVO newUserVO = new UserVO();
-        BeanUtils.copyProperties(users.get(0), newUserVO);
+        BeanUtils.copyProperties(userPojo, newUserVO);
         return ResponseVO.buildSuccess("login success", newUserVO);
     }
 
@@ -64,9 +74,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO queryBalance(UserVO userVO) {
         // TODO
-        List<User> users = userMapper.findByUsername(userVO.getUsername());
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
-        BitcoinWallet wallet = users.get(0).getWallet();
+        // BitcoinWallet wallet = users.get(0).getWallet();
         List<BlockChain> chains = ChainsUtil.getBlockchains();
         for (BlockChain chain : chains) {
 
@@ -76,10 +86,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO addKeys(UserVO userVO) {
-        List<User> users = userMapper.findByUsername(userVO.getUsername());
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
-        users.get(0).generateNewKeysAndAddress();
-        return ResponseVO.buildSuccess("addKeys success");
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        try {
+            FileWriter fw = new FileWriter(FILEPATH_ROOT + userPojo.getUsername() + ".txt", false);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            System.err.println("rewrite file error!");
+            return ResponseVO.buildFailure("addKeys failure");
+        }
+        userPojo.generateNewKeysAndAddress();
+        userPojo.serializeWallet();
+        UserVO newUserVO = new UserVO();
+        BeanUtils.copyProperties(userPojo, newUserVO);
+        return ResponseVO.buildSuccess("addKeys success", newUserVO);
     }
 
 }

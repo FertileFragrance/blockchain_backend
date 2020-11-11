@@ -1,4 +1,4 @@
-package com.blockchain.backend.entity.chain.block.tree.transaction.inandout;
+package com.blockchain.backend.pojo.chain.block.tree.transaction.inandout;
 
 import lombok.Getter;
 
