@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.blockchain.backend.pojo.user.User.FILEPATH_ROOT;
@@ -104,6 +106,18 @@ public class UserServiceImpl implements UserService {
         UserVO newUserVO = new UserVO();
         BeanUtils.copyProperties(userPojo, newUserVO);
         return ResponseVO.buildSuccess("addKeys success", newUserVO);
+    }
+
+    @Override
+    public ResponseVO queryAllUsers() {
+        List<com.blockchain.backend.entity.User> users =
+                (List<com.blockchain.backend.entity.User>) userMapper.findAll();
+        List<String> usernames = new ArrayList<>();
+        for (com.blockchain.backend.entity.User user : users) {
+            usernames.add(user.getUsername());
+        }
+        Collections.sort(usernames);
+        return ResponseVO.buildSuccess("query all users success", usernames);
     }
 
 }

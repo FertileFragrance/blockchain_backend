@@ -72,4 +72,13 @@ public class UserController {
         return userService.addKeys(userVO);
     }
 
+    /**
+     * 处理用户查询所有用户请求
+     * @return 包装好的视图层用户对象
+     */
+    @GetMapping("/queryAllUsers")
+    public ResponseVO queryAllUsers() {
+        return this.userService.queryAllUsers();
+    }
+
 }

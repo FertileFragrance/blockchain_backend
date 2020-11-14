@@ -43,4 +43,11 @@ public interface UserService {
      */
     ResponseVO addKeys(UserVO userVO);
 
+    /**
+     * 用户查询所有用户
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层用户对象
+     */
+    ResponseVO queryAllUsers();
+
 }
