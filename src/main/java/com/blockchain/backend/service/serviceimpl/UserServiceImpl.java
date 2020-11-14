@@ -1,4 +1,4 @@
-package com.blockchain.backend.service.serviceImpl;
+package com.blockchain.backend.service.serviceimpl;
 
 import com.blockchain.backend.dao.UserMapper;
 import com.blockchain.backend.pojo.user.User;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO register(UserVO userVO) {
         List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
-        if (users.size() > 0) {
+        if (!users.isEmpty()) {
             assert users.size() == 1;
             return ResponseVO.buildFailure("user exist");
         }
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public ResponseVO login(UserVO userVO) {
         List<com.blockchain.backend.entity.User> users =
                 userMapper.findByUsernameAndPassword(userVO.getUsername(), userVO.getPassword());
-        if (users.size() == 0) {
+        if (users.isEmpty()) {
             return ResponseVO.buildFailure("user not found");
         }
         assert users.size() == 1;
@@ -93,10 +93,8 @@ public class UserServiceImpl implements UserService {
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
-        try {
-            FileWriter fw = new FileWriter(FILEPATH_ROOT + userPojo.getUsername() + ".txt", false);
+        try (FileWriter fw = new FileWriter(FILEPATH_ROOT + userPojo.getUsername() + ".txt", false)) {
             fw.flush();
-            fw.close();
         } catch (IOException e) {
             System.err.println("rewrite file error!");
             return ResponseVO.buildFailure("addKeys failure");
