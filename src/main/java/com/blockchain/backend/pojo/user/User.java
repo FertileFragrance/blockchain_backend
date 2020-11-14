@@ -49,12 +49,9 @@ public class User {
      * 序列化钱包对象
      */
     public void serializeWallet() {
-        try {
-            FileOutputStream fos = new FileOutputStream(FILEPATH_ROOT + this.username + ".txt");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(FILEPATH_ROOT + this.username + ".txt");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this.wallet);
-            oos.close();
-            fos.close();
         } catch (IOException e) {
             System.err.println("serialize error!");
         }
@@ -64,9 +61,8 @@ public class User {
      * 反序列化钱包对象
      */
     public void deserializeWallet() {
-        try {
-            FileInputStream fis = new FileInputStream( FILEPATH_ROOT+ this.username + ".txt");
-            ObjectInputStream ois = new ObjectInputStream(fis);
+        try (FileInputStream fis = new FileInputStream(FILEPATH_ROOT + this.username + ".txt");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             this.wallet = (BitcoinWallet) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("deserialize error!");
