@@ -1,6 +1,7 @@
 package com.blockchain.backend.pojo.chain.block.tree.transaction.inandout;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 交易输入类
@@ -8,6 +9,7 @@ import lombok.Getter;
  * @author njuselhx
  */
 @Getter
+@Setter
 public class TransactionInput {
 
     /**
@@ -23,7 +25,15 @@ public class TransactionInput {
     /**
      * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
      */
-    private final String senderAddress;
+    private  String senderAddress;
+    /**
+     * 交易签名
+     */
+    private String signature;
+    /**
+     * 公钥
+     */
+    private String pubkey;
 
     public TransactionInput(String transactionID, int output_INDEX, String senderAddress) {
         this.transactionID = transactionID;

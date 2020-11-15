@@ -76,7 +76,7 @@ public class BlockChain {
      * @param address
      * @return
      */
-    private TransactionOutput[] getmyUTXOs(String address){
+    public  TransactionOutput[] getmyUTXOs(String address){
         List<TransactionOutput> unspent=new ArrayList<TransactionOutput>();
         Block lastblock=this.lastBlock;//得到该条链的最新区块，最新区块中的merkletree记录了最完整的交易数据。
         MerkleTree merkleTree=lastblock.getMerkleTree();
