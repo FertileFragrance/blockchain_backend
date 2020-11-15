@@ -58,7 +58,7 @@ public class UserController {
      * @return 包装好的视图层回应对象
      */
     @GetMapping("/queryBalance")
-    public ResponseVO queryBalance(@RequestBody UserVO userVO) {
+    public ResponseVO queryBalance(UserVO userVO) {
         return userService.queryBalance(userVO);
     }
 
