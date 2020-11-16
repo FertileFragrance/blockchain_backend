@@ -25,7 +25,7 @@ public class TransactionInput {
     /**
      * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
      */
-    private  String senderAddress;
+    private String senderAddress;
     /**
      * 交易签名
      */

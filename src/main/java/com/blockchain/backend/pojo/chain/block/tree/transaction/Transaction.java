@@ -27,12 +27,12 @@ public class Transaction {
     /**
      * 交易输入:一个或多个
      */
-    private final TransactionInput[] transInput;
+    private  TransactionInput[] transInput;
 
     /**
      * 交易输出：一个或多个
      */
-    private final TransactionOutput[] transOutput;
+    private  TransactionOutput[] transOutput;
 
     /**
      * 交易金额
@@ -42,7 +42,7 @@ public class Transaction {
     public Transaction(TransactionInput[]inputs,TransactionOutput[]outputs){
         this.transInput = inputs;
         this.transOutput = outputs;
-        this.SetTraction_ID();
+        this.SetTraction_ID(this);
     }
 
     /**
@@ -53,16 +53,19 @@ public class Transaction {
         // TODO not null after modification
         this.transOutput = null;
         this.amount = ChainsUtil.NUM_OF_BITCOINS;
-        this.SetTraction_ID();
+        this.SetTraction_ID(this);
     }
 
     /**
      * 设置交易ID
      * @param
      */
-    private void SetTraction_ID(){
-        String objectstring= JSON.toJSONString(this);//将交易对象序列化，得到一个字符串
+    private void SetTraction_ID(Transaction transaction){
+        //System.out.println("设置交易id");
+        String objectstring= JSON.toJSONString(transaction);//将交易对象序列化，得到一个字符串
+        //System.out.println(objectstring);
         String txID= CalculateUtil.applySha256(objectstring);//由得到的字符串hash出交易id
+        //System.out.println(txID);
         this.Transaction_ID=txID;
     }
 
@@ -73,10 +76,11 @@ public class Transaction {
      */
     public static Transaction new_Minner_Transaction(String minner_adress){
         //挖矿交易的输入是特殊的输入： 无交易ID，没有交易输出索引（设为-1）
+        System.out.println("创建新的挖矿交易");
         TransactionInput txinput=new TransactionInput(null,-1,"geniusblock");
         TransactionOutput txoutput=new TransactionOutput(10,minner_adress);//每次挖矿交易向矿工地址输出一定数目的比特币，暂定为10
         Transaction transaction=new Transaction(new TransactionInput[]{txinput},new TransactionOutput[]{txoutput});
-        transaction.SetTraction_ID();
+        transaction.SetTraction_ID(transaction);
         return  transaction;
     }
 
@@ -97,9 +101,10 @@ public class Transaction {
      * @param bc 区块链
      * @return
      */
-    public static Transaction newnormal_Transaction(String sender, String recipient, float amount, BlockChain bc){
+    public static Transaction newnormal_Transaction(String sender, String recipient, double amount, BlockChain bc){
+        System.out.println("创建普通交易：   "+sender+"---->"+recipient+"   金额为： "+amount);
         Block lastblock=bc.getLastBlock();//得到最新区块
-        List<Transaction> transactionList=lastblock.getMerkleTree().getTransactions();//最新区块中的树包含了最全的交易信息，相当于最新的账本
+         List<Transaction> transactionList=lastblock.getMerkleTree().getTransactions();//最新区块中的树包含了最全的交易信息，相当于最新的账本
         //钱不够，交易失败
         double res_amount=bc.getBalance(sender);
         if(res_amount<amount){
@@ -111,8 +116,9 @@ public class Transaction {
         List<TransactionOutput> willpay=new ArrayList<TransactionOutput>();//用于存放找到的将要花费的output
         Map<String,List<Integer>> TXID__outputIndex=new HashMap<>();
         double value_found=0;
-        A:for(int i=0;i<transactionList.size();i++){//遍历交易
-            TransactionOutput transactionOutput[]=transactionList.get(i).getTransOutput();
+        A:for(int i=1;i<transactionList.size();i++){//遍历交易  从1开始遍历（不知道为什么会在创建区块链时merkletree里会自己加一个莫名奇妙的交易）
+            TransactionOutput transactionOutput_false[]=transactionList.get(i).getTransOutput();
+            TransactionOutput transactionOutput[]=transactionOutput_false;
             List<Integer> outputIndex=new ArrayList<>();
             for(int j=0;j<transactionOutput.length;j++){//遍历当前交易中的output
                 if(transactionOutput[j].getRecipientAddress()!=sender){//若不是到sender中的output就跳过
@@ -128,37 +134,46 @@ public class Transaction {
                 }
             }
         }
+       // System.out.println("zzzz:"+JSON.toJSONString(TXID__outputIndex));
+        //System.out.println("zzzz:"+JSON.toJSONString(willpay));
         //output转input 即建立新的input，使input中的交易id和output索引能和 willpay中的output一 一对应起来
         TransactionInput transactionInput[]=new TransactionInput[willpay.size()];
+       // System.out.println(willpay.size());
         Set keyset=TXID__outputIndex.keySet();
         Iterator<String> iterator=keyset.iterator();
         int j=0;
         while(iterator.hasNext()){
             String txid=iterator.next();
+            //System.out.println("id:"+txid);
             List<Integer> index=TXID__outputIndex.get(txid);
+            //System.out.println(index.get(0));
             for(int i=0;i<index.size();i++){
-                transactionInput[j].setTransactionID(txid);
-                transactionInput[j].setOutput_INDEX(index.get(i));
-                transactionInput[j].setSenderAddress(sender);
+                transactionInput[j]=new TransactionInput(txid,index.get(i),sender);
                 j++;
             }
         }
         //创建属于收款人的output,即到收款人去的output,最后一笔单独处理，因为可能会有找零
-        TransactionOutput to_recipient[]=new TransactionOutput[willpay.size()+1];//多一笔找零，找零可以是0
+        TransactionOutput to_recipient[]=new TransactionOutput[willpay.size()+1];//多一笔找零(到付款人地址去），找零可以是0
+       // System.out.println("will::"+willpay);
         for(int i=0;i<to_recipient.length-2;i++){
             to_recipient[i]=willpay.get(i);
             to_recipient[i].setRecipientAddress(recipient);
         }
         Double change_back=value_found-amount;//找零数目
-        TransactionOutput last=willpay.get(willpay.size()-1);
-        last.setRecipientAddress(recipient);
-        last.setValue(last.getValue()-change_back);
-        to_recipient[to_recipient.length-2]=last;
+        TransactionOutput lastone=new TransactionOutput(willpay.get(willpay.size()-1).getValue()-change_back,recipient);
+        //lastone=willpay.get(willpay.size()-1);
+        //System.out.println(JSON.toJSONString(lastone)+"qianqinaqian"+JSON.toJSONString(transactionList));
+        //lastone.setRecipientAddress(recipient);
+        //System.out.println("后后后"+JSON.toJSONString(transactionList));
+        //lastone.setValue(lastone.getValue()-change_back);
+        to_recipient[to_recipient.length-2]=lastone;
+        //System.out.println("后后后"+JSON.toJSONString(transactionList));
+        //System.out.println("lastTX:"+JSON.toJSONString(lastone));
         TransactionOutput back=new TransactionOutput(change_back,sender);
         to_recipient[to_recipient.length-1]=back;
         //返回交易
         Transaction transaction=new Transaction(transactionInput,to_recipient);
-        transaction.SetTraction_ID();
+        transaction.SetTraction_ID(transaction);
         return transaction;
     }
     /**
