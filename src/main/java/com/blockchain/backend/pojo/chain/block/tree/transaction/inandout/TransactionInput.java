@@ -15,35 +15,38 @@ public class TransactionInput {
     /**
      * 所引用的UTXO所在的交易的ID
      */
-    private String transactionID;
+    private String transactionId;
 
     /**
      * output的索引
      */
-    private int output_INDEX;
+    private int outputIndex;
 
     /**
      * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
      */
+
     private String senderAddress;
+
     /**
      * 交易签名
      */
     private String signature;
+
     /**
      * 公钥
      */
-    private String pubkey;
+    private String publicKey;
 
-    public TransactionInput(String transactionID, int output_INDEX, String senderAddress) {
-        this.transactionID = transactionID;
-        this.output_INDEX = output_INDEX;
+    public TransactionInput(String transactionId, int outputIndex, String senderAddress) {
+        this.transactionId = transactionId;
+        this.outputIndex = outputIndex;
         this.senderAddress = senderAddress;
     }
 
     @Override
     public TransactionInput clone() {
-        return new TransactionInput(this.transactionID, this.output_INDEX, this.senderAddress);
+        return new TransactionInput(this.transactionId, this.outputIndex, this.senderAddress);
     }
 
 }

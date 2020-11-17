@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * Merkle树的节点
+ *
  * @author 听取WA声一片
  */
 @Data

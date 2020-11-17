@@ -9,6 +9,7 @@ import lombok.Getter;
 
 /**
  * 链中的块
+ *
  * @author 听取WA声一片
  */
 @Getter
@@ -41,10 +42,11 @@ public class Block {
 
     /**
      * 当且仅当增加创始区块时会调用此构造方法
+     *
      * @param previousBlockHashPointer 前一个区块的哈希指针，是个定值
-     * @param nonce 挖出的随机数
+     * @param nonce                    挖出的随机数
      */
-    public Block(String previousBlockHashPointer, int nonce, BlockChain belongingChain) {
+    public Block(String previousBlockHashPointer, long nonce, BlockChain belongingChain) {
         this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
         this.merkleTree = new MerkleTree();
         this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
@@ -66,6 +68,7 @@ public class Block {
 
     /**
      * 增加交易记录
+     *
      * @param transaction 交易
      */
     public void addTransaction(Transaction transaction) {

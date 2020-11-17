@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 管理所有区块链的类，仅作工具类使用
+ *
  * @author njuselhx
  */
 public class ChainsUtil {
@@ -31,6 +32,7 @@ public class ChainsUtil {
      * 给每条区块链增加一个区块
      */
     public static void updateChains() {
+        // TODO modify
         for (BlockChain blockchain : BLOCKCHAINS) {
             blockchain.addBlockToChain();
         }
