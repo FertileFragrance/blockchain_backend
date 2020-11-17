@@ -1,6 +1,5 @@
 package com.blockchain.backend.pojo.chain;
 
-import com.alibaba.fastjson.JSON;
 import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.pojo.chain.block.tree.MerkleTree;
 import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
@@ -63,7 +62,6 @@ public class BlockChain {
      */
     public double getBalance(String adress){
         TransactionOutput[] transactionOutput=this.getmyUTXOs(adress);
-        //System.out.println("get my UTXO:"+JSON.toJSONString(transactionOutput));
         double total=0;
         for(int i=0;i<transactionOutput.length;i++){
             total+=transactionOutput[i].getValue();
@@ -83,30 +81,27 @@ public class BlockChain {
         Block lastblock=this.lastBlock;//得到该条链的最新区块，最新区块中的merkletree记录了最完整的交易数据。
         MerkleTree merkleTree=lastblock.getMerkleTree();
         List<Transaction> transactions=merkleTree.getTransactions();
-        Map<String,Integer[]> input_to_output=new HashMap<String,Integer[]>();//里面存放intput对应的output所在的交易和索引，这些是被花费过的output
+        Map<String,Integer[]> InputToOutput=new HashMap<String,Integer[]>();//里面存放intput对应的output所在的交易和索引，这些是被花费过的output
         //遍历交易
         for(int i=1;i<transactions.size();i++){
+
             Transaction transaction=transactions.get(i);
             TransactionInput []transactionInput=transaction.getTransInput();
-            //System.out.println("transcINPUt"+JSON.toJSONString(transactionInput));
-            //TransactionOutput []transactionOutputs=transaction.getTransOutput();
-            //System.out.println("output"+JSON.toJSONString(transactionOutputs));
             //遍历交易输入：inputs,每个input 对应一个交易id 和该id交易中的一个output（索引）
-            //Map<String,Integer[]> input_to_output=new HashMap<String,Integer[]>();//里面存放intput对应的output所在的交易和索引，这些是被花费过的output
             for(int j=0;j<transactionInput.length;j++){
                 if(address.equals(transactionInput[j].getSenderAddress())){//产生了该地址的input，说明该input对应的output被花费了
-                    if(input_to_output.get(transactionInput[j])==null){//该交易id中还没有被花费过的output
+                    if(InputToOutput.get(transactionInput[j])==null){//该交易id中还没有被花费过的output
                         Integer []index={transactionInput[j].getOutput_INDEX()};
-                        input_to_output.put(transactionInput[j].getTransactionID(),index);
+                        InputToOutput.put(transactionInput[j].getTransactionID(),index);
                     }
                     else{
-                        Integer []index=input_to_output.get(transactionInput[j]);
+                        Integer []index=InputToOutput.get(transactionInput[j]);
                         Integer []newindex=new Integer[index.length+1];
                         for(int k=0;k<newindex.length-1;k++){
                             newindex[k]=index[k];
                         }
                         newindex[newindex.length-1]=transactionInput[j].getOutput_INDEX();
-                        input_to_output.put(transactionInput[j].getTransactionID(),newindex);
+                        InputToOutput.put(transactionInput[j].getTransactionID(),newindex);
                     }
                 }
             }
@@ -117,8 +112,8 @@ public class BlockChain {
             Transaction transaction=transactions.get(i);
             TransactionOutput transactionOutputs[]=transaction.getTransOutput();
             A:for(int a=0;a<transactionOutputs.length;a++){//a 是当前交易中output的索引
-                String txid=transactions.get(i).getTransaction_ID();//得到当前遍历的交易id
-                Integer []index=input_to_output.get(txid);//看当前交易中有无使用过的output
+                String txid=transactions.get(i).getTransactionId();//得到当前遍历的交易id
+                Integer []index=InputToOutput.get(txid);//看当前交易中有无使用过的output
                 if(index==null){//没有被使用过的output
                     if(address.equals(transactionOutputs[a].getRecipientAddress())){//找到了属于address的output
                         unspent.add(transactionOutputs[a]);
