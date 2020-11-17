@@ -17,7 +17,12 @@ public class BlockHead {
     /**
      * 前一个块的哈希指针
      */
-    private final String previousBlockHashPointer;
+    public final String previousBlockHashPointer;
+
+    /**
+     * 创世区块的前指针hash(OD)
+     */
+    public String genesisPreHash;
 
     /**
      * 时间戳，由获取系统时间得到

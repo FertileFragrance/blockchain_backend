@@ -1,9 +1,11 @@
 package com.blockchain.backend.service.serviceimpl;
 
 import com.blockchain.backend.dao.UserMapper;
+import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.pojo.chain.BlockChain;
 import com.blockchain.backend.service.UserService;
+import com.blockchain.backend.util.CalculateUtil;
 import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
 import com.blockchain.backend.vo.UserVO;
@@ -69,9 +71,39 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO mine(UserVO userVO) {
-        // TODO
+        // TODO:将下列注释掉的方法实现
         return null;
     }
+//    public static Block generateBlock(Block oldBlock, int vac) {
+//        Block newBlock = new Block();
+//        但是block类又没有无参构造，就算加个无参构造，这个区块的属性也得不到初始化，像MerkelTree一类的对象我都不知道怎么设置
+//        newBlock.setPreHash(oldBlock.getHash());这里的oldBlockHash我不知道从哪获取
+//        newBlock.setDifficulty(difficulty);
+//
+//        /*
+//         * 这里的 for 循环很重要： 获得 i 的十六进制表示 ，将 Nonce 设置为这个值，并传入 calculateHash 计算哈希值。
+//         * 之后通过Block类的isHashValid 函数判断是否满足难度要求，如果不满足就重复尝试。 这个计算过程会一直持续，直到求得了满足要求的
+//         * Nonce 值，之后通过方法将新块加入到链上。
+//         */
+//        for (int i = 0;; i++) {
+//            String hex = String.format("%x", i);
+//            newBlock.setNonce(hex);
+//            if (!isHashValid(calculateHash(newBlock), newBlock.getDifficulty())) {
+//                System.out.printf("%s\n", calculateHash(newBlock));
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    LOGGER.error("error:", e);
+//                }
+//                continue;
+//            } else {
+//                System.out.printf("%s work done!\n", calculateHash(newBlock));
+//                newBlock.setHash(calculateHash(newBlock));
+//                break;
+//            }
+//        }
+//        return newBlock;
+//    }
 
     @Override
     public ResponseVO queryBalance(UserVO userVO) {
