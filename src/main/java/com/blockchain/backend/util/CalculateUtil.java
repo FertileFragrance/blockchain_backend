@@ -19,6 +19,7 @@ import java.security.SecureRandom;
 
 /**
  * 计算工具类
+ *
  * @author OD
  */
 public class CalculateUtil {
@@ -28,6 +29,7 @@ public class CalculateUtil {
 
     /**
      * 应用sha256算法，根据输入随机生成一个哈希值
+     *
      * @param str 传入的字符串
      * @return 生成的哈希值
      */
@@ -59,6 +61,7 @@ public class CalculateUtil {
 
     /**
      * 运用椭圆曲线算法生成私钥和公钥
+     *
      * @return 私钥和公钥
      */
     public static Pair<String, Pair<String, String>> generateKeys() {
@@ -81,6 +84,7 @@ public class CalculateUtil {
 
     /**
      * 运用双哈希生成比特币地址
+     *
      * @param publicKey 公钥
      * @return 比特币地址
      */

@@ -34,8 +34,8 @@ public class MerkleTree {
     /**
      * 创世区块产生时调用此构造方法
      */
-    public MerkleTree() {
-        Transaction coinBase = new Transaction();
+    public MerkleTree(String address) {
+        Transaction coinBase = new Transaction(address);
         this.transactions = new ArrayList<>();
         this.transactions.add(coinBase);
         this.merkleRoot = new TreeNode(CalculateUtil.applySha256(coinBase.generateHash()));

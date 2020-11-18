@@ -14,6 +14,7 @@ public class TransactionInput {
 
     /**
      * 所引用的UTXO所在的交易的ID
+     * TODO consider changing the current type to "TransactionOutput"
      */
     private String transactionId;
 
@@ -26,7 +27,7 @@ public class TransactionInput {
      * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
      */
 
-    private String senderAddress;
+    private final String senderAddress;
 
     /**
      * 交易签名

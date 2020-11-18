@@ -46,9 +46,9 @@ public class Block {
      * @param previousBlockHashPointer 前一个区块的哈希指针，是个定值
      * @param nonce                    挖出的随机数
      */
-    public Block(String previousBlockHashPointer, long nonce, BlockChain belongingChain) {
+    public Block(String previousBlockHashPointer, long nonce, BlockChain belongingChain, String address) {
         this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
-        this.merkleTree = new MerkleTree();
+        this.merkleTree = new MerkleTree(address);
         this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
                 + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
         this.belongingChain = belongingChain;

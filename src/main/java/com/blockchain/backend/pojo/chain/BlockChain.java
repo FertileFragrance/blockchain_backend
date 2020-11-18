@@ -26,8 +26,8 @@ public class BlockChain {
      *
      * @param nonce 随机数
      */
-    public BlockChain(long nonce) {
-        this.lastBlock = new Block("I'm Genesis Block.", nonce, this);
+    public BlockChain(long nonce, String address) {
+        this.lastBlock = new Block("I'm Genesis Block.", nonce, this, address);
         ChainsUtil.getBlockchains().add(this);
     }
 
@@ -48,36 +48,39 @@ public class BlockChain {
     }
 
     /**
-     * 增加交易记录
+     * 增加交易记录，可修改
      *
-     * @param transaction 交易
+     * @param transactions 要增加的交易
      */
-    public void addTransaction(Transaction transaction) {
-        this.lastBlock.addTransaction(transaction);
+    public void addTransaction(Transaction[] transactions) {
+        for (Transaction transaction : transactions) {
+            this.lastBlock.addTransaction(transaction);
+        }
     }
 
     /**
-     * 余额查询：未被花费的output的value之和
+     * 余额查询
      *
      * @param address 发起查询的用户地址
      * @return 该条链上的未花费的交易输出
      */
     public double getBalance(String address) {
-        TransactionOutput[] transactionOutput = this.getMyUTXOs(address);
+        Transaction[] transactions = this.getMyUTXOs(address);
         double total = 0;
-        for (TransactionOutput output : transactionOutput) {
-            total += output.getValue();
+        for (Transaction transaction : transactions) {
+            total += transaction.getAmount();
         }
         return total;
     }
 
     /**
      * 找到目前未花费的output
-     *
+     * TODO need to correct
      * @param address 发起查询的用户地址
-     * @return 该条链上的未花费的交易输出
+     * @return 该条链上的未花费的交易
      */
-    private TransactionOutput[] getMyUTXOs(String address) {
+    private Transaction[] getMyUTXOs(String address) {
+        /*
         List<TransactionOutput> unspent = new ArrayList<>();
         Block last = this.lastBlock;
         MerkleTree merkleTree = last.getMerkleTree();
@@ -128,6 +131,9 @@ public class BlockChain {
             unspentOutputs[i] = unspent.get(i);
         }
         return unspentOutputs;
+        */
+        return null;
     }
+
 
 }

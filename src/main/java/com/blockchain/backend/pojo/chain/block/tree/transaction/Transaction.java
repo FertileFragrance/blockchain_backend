@@ -11,6 +11,9 @@ import lombok.Setter;
 
 import java.util.*;
 
+/**
+ * @author OD
+ */
 @Setter
 @Getter
 public class Transaction {
@@ -21,33 +24,32 @@ public class Transaction {
     private String transactionId;
 
     /**
-     * 交易输入:一个或多个
+     * 交易输入
      */
-    private TransactionInput[] transInput;
+    private TransactionInput transInput;
 
     /**
-     * 交易输出：一个或多个
+     * 交易输出
      */
-    private TransactionOutput[] transOutput;
+    private TransactionOutput transOutput;
 
     /**
      * 交易金额
      */
     private int amount;
 
-    public Transaction(TransactionInput[] inputs, TransactionOutput[] outputs) {
-        this.transInput = inputs;
-        this.transOutput = outputs;
+    public Transaction(TransactionInput transInput, TransactionOutput transOutput) {
+        this.transInput = transInput;
+        this.transOutput = transOutput;
         this.setTractionId(this);
     }
 
     /**
      * 产生创世区块时调用此构造方法
      */
-    public Transaction() {
+    public Transaction(String address) {
         this.transInput = null;
-        // TODO add transactionOutput
-        this.transOutput = null;
+        this.transOutput = new TransactionOutput(address);
         this.amount = ChainsUtil.NUM_OF_BITCOINS;
         this.setTractionId(this);
     }
@@ -68,7 +70,8 @@ public class Transaction {
      * @param minerAddress 矿工地址
      * @return 返回挖矿交易
      */
-    public static Transaction newMinerTransaction(String minerAddress) {
+    /*
+     public static Transaction newMinerTransaction(String minerAddress) {
         System.out.println("创建新的挖矿交易");
         TransactionInput txInput = new TransactionInput(null, -1, "geniusblock");
         TransactionOutput txOutput = new TransactionOutput(10, minerAddress);
@@ -76,6 +79,8 @@ public class Transaction {
         transaction.setTractionId(transaction);
         return transaction;
     }
+     */
+
 
     /**
      * 创建普通转账交易，内部逻辑如下：
@@ -95,6 +100,7 @@ public class Transaction {
      * @param bc        区块链
      * @return transaction 普通交易
      */
+    /*
     public static Transaction newNormalTransaction(String sender, String recipient, double amount, BlockChain bc) {
         System.out.println("创建普通交易：   " + sender + "---->" + recipient + "   转账金额为： " + amount);
         Block lastBlock = bc.getLastBlock();
@@ -124,7 +130,7 @@ public class Transaction {
                 }
             }
         }
-        TransactionInput[] transactionInput = new TransactionInput[willPay.size()];
+        TransactionInput transactionInput = new TransactionInput[willPay.size()];
         Set keySet = txIdOutputIndex.keySet();
         Iterator<String> iterator = keySet.iterator();
         int j = 0;
@@ -136,7 +142,7 @@ public class Transaction {
                 j++;
             }
         }
-        TransactionOutput[] toRecipient = new TransactionOutput[willPay.size() + 1];
+        TransactionOutput toRecipient = new TransactionOutput[willPay.size() + 1];
         for (int i = 0; i < toRecipient.length - 2; i++) {
             toRecipient[i] = willPay.get(i);
             toRecipient[i].setRecipientAddress(recipient);
@@ -150,6 +156,7 @@ public class Transaction {
         transaction.setTractionId(transaction);
         return transaction;
     }
+     */
 
     /**
      * 复制时调用此构造方法
@@ -158,7 +165,7 @@ public class Transaction {
      * @param transOutput 上一个的交易输出
      * @param amount      上一个的交易金额
      */
-    public Transaction(TransactionInput[] transInput, TransactionOutput[] transOutput, int amount) {
+    public Transaction(TransactionInput transInput, TransactionOutput transOutput, int amount) {
         this.transInput = transInput;
         this.transOutput = transOutput;
         this.amount = amount;
@@ -170,26 +177,6 @@ public class Transaction {
     private boolean scripSig(String sender, String recipient) {
         return true;
     }
-
-
-    /**
-     * 统筹币值，进行各条链上币的转移
-     */
-//    private void startTransaction() {
-//        CoinBag forTransaction = new CoinBag();
-//        forTransaction.countCoin(recipientAddress, Integer.toString(amount));
-//        int counter = 0;
-//        String coinsSingleChain;
-//        for (String coinsAddress : forTransaction.transactionList) {
-//            if (counter % 2 == 0) {
-//                coinsSingleChain = coinsAddress;
-//            } else {
-//                //Block.merkleTree.insertTransaction(sender, recipient, coinsSingleChain, coinsAddress);
-//            }
-//            counter++;
-//        }
-//        System.out.println("the transaction is finished");
-//    }
 
     /**
      * 生成哈希值
@@ -208,14 +195,13 @@ public class Transaction {
      */
     @Override
     public Transaction clone() {
-        TransactionInput[] transIn;
+        TransactionInput transIn;
         if (this.transInput == null) {
             transIn = null;
         } else {
             transIn = this.transInput.clone();
         }
-        TransactionOutput[] transOut;
-
+        TransactionOutput transOut;
         if (this.transOutput == null) {
             transOut = null;
         } else {

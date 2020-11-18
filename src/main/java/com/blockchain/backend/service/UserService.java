@@ -10,6 +10,7 @@ public interface UserService {
 
     /**
      * 用户注册
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -17,6 +18,7 @@ public interface UserService {
 
     /**
      * 用户登录
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -24,6 +26,7 @@ public interface UserService {
 
     /**
      * 用户挖矿
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -31,6 +34,7 @@ public interface UserService {
 
     /**
      * 用户查询余额
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -38,6 +42,7 @@ public interface UserService {
 
     /**
      * 用户增加密钥对
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -45,6 +50,7 @@ public interface UserService {
 
     /**
      * 用户查询所有用户
+     *
      * @return 包装好的视图层用户对象
      */
     ResponseVO queryAllUsers();

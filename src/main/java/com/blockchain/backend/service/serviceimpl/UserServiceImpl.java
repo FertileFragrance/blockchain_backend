@@ -2,9 +2,8 @@ package com.blockchain.backend.service.serviceimpl;
 
 import com.blockchain.backend.dao.UserMapper;
 import com.blockchain.backend.pojo.user.User;
-import com.blockchain.backend.pojo.chain.BlockChain;
+import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.service.UserService;
-import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
@@ -69,19 +68,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO mine(UserVO userVO) {
-        // TODO
+        // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
         return null;
     }
 
     @Override
     public ResponseVO queryBalance(UserVO userVO) {
-        // TODO
+        // TODO 在BlockChain类和ChainsUtil中添加查询单条链和所有链的余额后，完成此方法，用用户所有的地址遍历查询一遍
         List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
-        // BitcoinWallet wallet = users.get(0).getWallet();
-        List<BlockChain> chains = ChainsUtil.getBlockchains();
-        for (BlockChain chain : chains) {
-
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        BitcoinWallet wallet = userPojo.getWallet();
+        for (String address : wallet.getBitcoinAddresses()) {
+            // 查询
         }
         return null;
     }
