@@ -5,6 +5,7 @@ import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +118,19 @@ public class UserServiceImpl implements UserService {
         }
         Collections.sort(usernames);
         return ResponseVO.buildSuccess("query all users success", usernames);
+    }
+
+    @Override
+    public ResponseVO transferAccount(TransferAccountVO transferAccountVO) {
+        List<com.blockchain.backend.entity.User> senders =
+                userMapper.findByUsername(transferAccountVO.getSenderName());
+        assert senders.size() == 1;
+        User sender = new User();
+        BeanUtils.copyProperties(senders.get(0), sender);
+        sender.deserializeWallet();
+        // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
+        // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
+        return null;
     }
 
 }

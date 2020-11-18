@@ -1,6 +1,7 @@
 package com.blockchain.backend.service;
 
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 
 /**
@@ -54,5 +55,13 @@ public interface UserService {
      * @return 包装好的视图层用户对象
      */
     ResponseVO queryAllUsers();
+
+    /**
+     * 用户转账
+     *
+     * @param transferAccountVO 视图层转账表单对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO transferAccount(TransferAccountVO transferAccountVO);
 
 }
