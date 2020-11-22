@@ -21,11 +21,6 @@ public class BlockChain {
      */
     private Block lastBlock;
 
-    /**
-     * 无参构造方法
-     * @author OD
-     */
-    public BlockChain(){}
 
     /**
      * 构造方法，矿工找到随机数时调用

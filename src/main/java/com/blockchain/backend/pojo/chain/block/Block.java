@@ -91,16 +91,16 @@ public class Block {
      * @author OD
      * @param blockChain 希望增加区块的链
      */
-    public void timerBlock(BlockChain blockChain) {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Block lastBlock = blockChain.getLastBlock();
-                Block newBlock = new Block(lastBlock.belongingChain);
-            }
-        }, 120000, 120000);//调用方法120000ms后执行，每隔120000ms再次执行
-    }
+//    public void timerBlock(BlockChain blockChain) {
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                Block lastBlock = blockChain.getLastBlock();
+//                Block newBlock = new Block(lastBlock.belongingChain);
+//            }
+//        }, 120000, 120000);//调用方法120000ms后执行，每隔120000ms再次执行
+//    }
 
 
     /**
@@ -109,10 +109,10 @@ public class Block {
      * @param difficulty 难度
      * @return 是否合法
      */
-    public boolean isHashValid(String hash, int difficulty) {
-        String prefix = repeat("0", difficulty);
-        return hash.startsWith(prefix);
-    }
+//    public boolean isHashValid(String hash, int difficulty) {
+//        String prefix = repeat("0", difficulty);
+//        return hash.startsWith(prefix);
+//    }
 
     /**
      *重复字符串
@@ -126,26 +126,6 @@ public class Block {
             buf.append(str);
         }
         return buf.toString();
-    }
-
-    /**
-     * 设置难度
-     * @param difficulty 难度
-     */
-    public static void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    /**
-     * 获取难度
-     */
-    public int getDifficulty() {return difficulty;}
-
-    /**
-     * 设置hash
-     */
-    public void setPreHash(String hash) {
-        this.blockHead.genesisPreHash = hash;
     }
 
 

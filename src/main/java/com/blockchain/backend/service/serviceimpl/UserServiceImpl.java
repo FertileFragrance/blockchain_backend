@@ -1,9 +1,13 @@
 package com.blockchain.backend.service.serviceimpl;
 
 import com.blockchain.backend.dao.UserMapper;
+import com.blockchain.backend.pojo.chain.BlockChain;
+import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.service.UserService;
+import com.blockchain.backend.util.CalculateUtil;
+import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
 import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
@@ -70,6 +74,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO mine(UserVO userVO) {
         // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
+        long nonce = 0;
+        String hexHash;//十六进制的hash
+        do {
+            hexHash = CalculateUtil.applySha256(Long.toString(nonce));
+            nonce ++;
+        } while (hexHash.startsWith(ChainsUtil.getAimedStr()));
+        BlockChain newBlockChain = new BlockChain(nonce, hexHash);
         return null;
     }
 
