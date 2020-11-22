@@ -11,8 +11,8 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
-        BlockChain chain1 = new BlockChain(0);
-        BlockChain chain2 = new BlockChain(1);
+        BlockChain chain1 = new BlockChain(0, null);
+        BlockChain chain2 = new BlockChain(1, null);
         ChainsUtil.updateChains();
         Block block11 = chain1.getLastBlock();
         Block block21 = chain2.getLastBlock();

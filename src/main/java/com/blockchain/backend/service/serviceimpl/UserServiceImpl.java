@@ -1,13 +1,11 @@
 package com.blockchain.backend.service.serviceimpl;
 
 import com.blockchain.backend.dao.UserMapper;
-import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.pojo.user.User;
-import com.blockchain.backend.pojo.chain.BlockChain;
+import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.service.UserService;
-import com.blockchain.backend.util.CalculateUtil;
-import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,49 +69,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO mine(UserVO userVO) {
-        // TODO:将下列注释掉的方法实现
+        // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
         return null;
     }
-//    public static Block generateBlock(Block oldBlock, int vac) {
-//        Block newBlock = new Block();
-//        但是block类又没有无参构造，就算加个无参构造，这个区块的属性也得不到初始化，像MerkelTree一类的对象我都不知道怎么设置
-//        newBlock.setPreHash(oldBlock.getHash());这里的oldBlockHash我不知道从哪获取
-//        newBlock.setDifficulty(difficulty);
-//
-//        /*
-//         * 这里的 for 循环很重要： 获得 i 的十六进制表示 ，将 Nonce 设置为这个值，并传入 calculateHash 计算哈希值。
-//         * 之后通过Block类的isHashValid 函数判断是否满足难度要求，如果不满足就重复尝试。 这个计算过程会一直持续，直到求得了满足要求的
-//         * Nonce 值，之后通过方法将新块加入到链上。
-//         */
-//        for (int i = 0;; i++) {
-//            String hex = String.format("%x", i);
-//            newBlock.setNonce(hex);
-//            if (!isHashValid(calculateHash(newBlock), newBlock.getDifficulty())) {
-//                System.out.printf("%s\n", calculateHash(newBlock));
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    LOGGER.error("error:", e);
-//                }
-//                continue;
-//            } else {
-//                System.out.printf("%s work done!\n", calculateHash(newBlock));
-//                newBlock.setHash(calculateHash(newBlock));
-//                break;
-//            }
-//        }
-//        return newBlock;
-//    }
 
     @Override
     public ResponseVO queryBalance(UserVO userVO) {
-        // TODO
+        // TODO 在BlockChain类和ChainsUtil中添加查询单条链和所有链的余额后，完成此方法，用用户所有的地址遍历查询一遍
         List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
-        // BitcoinWallet wallet = users.get(0).getWallet();
-        List<BlockChain> chains = ChainsUtil.getBlockchains();
-        for (BlockChain chain : chains) {
-
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        BitcoinWallet wallet = userPojo.getWallet();
+        for (String address : wallet.getBitcoinAddresses()) {
+            // 查询
         }
         return null;
     }
@@ -148,6 +118,19 @@ public class UserServiceImpl implements UserService {
         }
         Collections.sort(usernames);
         return ResponseVO.buildSuccess("query all users success", usernames);
+    }
+
+    @Override
+    public ResponseVO transferAccount(TransferAccountVO transferAccountVO) {
+        List<com.blockchain.backend.entity.User> senders =
+                userMapper.findByUsername(transferAccountVO.getSenderName());
+        assert senders.size() == 1;
+        User sender = new User();
+        BeanUtils.copyProperties(senders.get(0), sender);
+        sender.deserializeWallet();
+        // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
+        // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
+        return null;
     }
 
 }

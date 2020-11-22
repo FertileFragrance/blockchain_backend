@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 块头
+ *
  * @author 听取WA声一片
  */
 @Data
@@ -41,8 +42,9 @@ public class BlockHead {
 
     /**
      * 创世区块产生时调用此构造方法
+     *
      * @param previousBlockHashPointer 前一个区块的哈希指针，已经给定
-     * @param nonce 挖到的随机数
+     * @param nonce                    挖到的随机数
      */
     public BlockHead(String previousBlockHashPointer, long nonce) {
         this.previousBlockHashPointer = previousBlockHashPointer;
@@ -52,9 +54,10 @@ public class BlockHead {
 
     /**
      * 区块复制时调用此构造方法
+     *
      * @param previousBlockHashPointer 区块链中最后一个区块的哈希指针
-     * @param nonce 区块链中最后一个区块的随机数
-     * @param transactionNumber 区块链中最后一个区块的交易数量
+     * @param nonce                    区块链中最后一个区块的随机数
+     * @param transactionNumber        区块链中最后一个区块的交易数量
      */
     public BlockHead(String previousBlockHashPointer, long nonce, int transactionNumber) {
         this.previousBlockHashPointer = previousBlockHashPointer;
@@ -64,6 +67,7 @@ public class BlockHead {
 
     /**
      * 拷贝前一个区块头，但哈希指针不同
+     *
      * @return 新的区块头对象
      */
     public BlockHead clone(String previousBlockHashPointer) {

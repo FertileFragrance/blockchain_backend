@@ -2,6 +2,7 @@ package com.blockchain.backend.controller;
 
 import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class UserController {
 
     /**
      * 处理用户注册请求
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -34,6 +36,7 @@ public class UserController {
 
     /**
      * 处理用户登录请求
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -44,6 +47,7 @@ public class UserController {
 
     /**
      * 处理用户挖矿请求
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -54,6 +58,7 @@ public class UserController {
 
     /**
      * 处理用户查询余额请求
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -64,6 +69,7 @@ public class UserController {
 
     /**
      * 处理用户增加密钥请求
+     *
      * @param userVO 视图层用户对象
      * @return 包装好的视图层回应对象
      */
@@ -74,11 +80,23 @@ public class UserController {
 
     /**
      * 处理用户查询所有用户请求
+     *
      * @return 包装好的视图层用户对象
      */
     @GetMapping("/queryAllUsers")
     public ResponseVO queryAllUsers() {
         return this.userService.queryAllUsers();
+    }
+
+    /**
+     * 处理用户转账请求
+     *
+     * @param transferAccountVO 视图层转账表单对象
+     * @return 包装好的视图层回应对象
+     */
+    @PostMapping("/transferAccount")
+    public ResponseVO transferAccount(@RequestBody TransferAccountVO transferAccountVO) {
+        return this.userService.transferAccount(transferAccountVO);
     }
 
 }
