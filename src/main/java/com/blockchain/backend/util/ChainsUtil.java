@@ -13,16 +13,6 @@ import java.util.List;
 public class ChainsUtil {
 
     /**
-     * 挖矿难度
-     */
-    private static int difficulty = 6;
-
-    /**
-     * 目标字符串
-     */
-    private static final String aimedStr = repeat("0", difficulty);
-
-    /**
      * 私有化构造方法，不允许创建实例
      */
     private ChainsUtil() {
@@ -53,37 +43,17 @@ public class ChainsUtil {
     }
 
     /**
-     * 设置和获取难度
-     * @param dif 难度
+     * 查询地址上所有链上的总余额
+     * @param address
+     * @return 返回的是每条链上的余额的相加的结果
      */
-    public static void setDifficulty(int dif) {
-        difficulty = dif;
-    }
-
-    public static int getDifficulty() {
-        return difficulty;
-    }
-
-    /**
-     * 获取目标字符串
-     */
-
-    public static String getAimedStr() {
-        return aimedStr;
-    }
-
-    /**
-     *重复字符串
-     * @param str 字符串
-     * @param repeat 重复次数
-     * @return 重复后字符串
-     */
-    private static String repeat(String str, int repeat) {
-        final StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < repeat; i++) {
-            buf.append(str);
+    public  static  double getAllBlance(String address){
+        double allBalance=0;
+        List<BlockChain> blockChains=getBlockchains();
+        for(int i=0;i<blockChains.size();i++){//遍历所有链
+            allBalance+=blockChains.get(i).getBalance(address);
         }
-        return buf.toString();
+        return  allBalance;
     }
 
 }

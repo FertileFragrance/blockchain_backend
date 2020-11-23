@@ -27,7 +27,7 @@ public class TransactionInput {
      * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
      */
 
-    private final String senderAddress;
+    private  String senderAddress;
 
     /**
      * 交易签名
@@ -39,15 +39,14 @@ public class TransactionInput {
      */
     private String publicKey;
 
-    public TransactionInput(String transactionId, int outputIndex, String senderAddress) {
+    public TransactionInput(String transactionId,  String senderAddress) {
         this.transactionId = transactionId;
-        this.outputIndex = outputIndex;
         this.senderAddress = senderAddress;
     }
 
     @Override
     public TransactionInput clone() {
-        return new TransactionInput(this.transactionId, this.outputIndex, this.senderAddress);
+        return new TransactionInput(this.transactionId,  this.senderAddress);
     }
 
 }
