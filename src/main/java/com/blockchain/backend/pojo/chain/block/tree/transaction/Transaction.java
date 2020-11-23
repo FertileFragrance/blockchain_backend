@@ -95,7 +95,7 @@ public class Transaction implements Serializable {
         TransactionInput transactionInput = new TransactionInput(null, "geniusblock");
         TransactionOutput transactionOutput = new TransactionOutput(minerAddress);
         // 挖到矿了，对transaction进行更改，暂时设置挖矿获得金额为10
-        transaction.setAmount(10);
+        transaction.setAmount(ChainsUtil.NUM_OF_BITCOINS);
         transaction.setTransInput(transactionInput);
         transaction.setTransOutput(transactionOutput);
         transaction.setTractionId(transaction);

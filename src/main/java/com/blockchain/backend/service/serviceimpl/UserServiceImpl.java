@@ -110,6 +110,9 @@ public class UserServiceImpl implements UserService {
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
+        BitcoinWallet bitcoinWallet=userPojo.getWallet();
+        int defaultIndex=bitcoinWallet.getDefaultAddressIndex();
+        String minnerAddress=bitcoinWallet.getBitcoinAddresses().get(defaultIndex);
         long nonce = 0;
         // 十六进制的hash
         String hexHash;
@@ -121,6 +124,7 @@ public class UserServiceImpl implements UserService {
                 if (chains.isEmpty()) {
                     BlockChain newBlockChain = new BlockChain(nonce, userPojo.getWallet()
                             .getBitcoinAddresses().get(userPojo.getWallet().getDefaultAddressIndex()));
+                    newBlockChain.addMinerTransaction(minnerAddress);
                     Chain chainEntity = new Chain(nonce);
                     chainMapper.save(chainEntity);
                     ChainsUtil.serializeBlockChain(newBlockChain);
