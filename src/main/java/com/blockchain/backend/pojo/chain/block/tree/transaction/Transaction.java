@@ -38,10 +38,10 @@ public class Transaction {
      */
     private double amount;
 
-    public Transaction(TransactionInput transInput, TransactionOutput transOutput,double amount) {
+    public Transaction(TransactionInput transInput, TransactionOutput transOutput, double amount) {
         this.transInput = transInput;
         this.transOutput = transOutput;
-        this.amount=amount;
+        this.amount = amount;
         this.setTractionId(this);
     }
 
@@ -83,23 +83,23 @@ public class Transaction {
      */
 
     /**
-     * 挖矿交易
+     * TODO 挖矿交易
+     *
      * @param transaction
-     * @return transaction 更改过后的transction
+     * @return transaction 更改过后的transaction
      */
-    public  static  Transaction newMinnerTransaction(Transaction transaction){
+    public static Transaction newMinerTransaction(Transaction transaction) {
         System.out.println("创建新的挖矿交易：");
-        String minnerAdress=transaction.getTransOutput().getRecipientAddress();
-        TransactionInput transactionInput=new TransactionInput(null,"geniusblock");
-        TransactionOutput transactionOutput=new TransactionOutput(minnerAdress);
-        //挖到矿了，对tranction进行更改，暂时设置挖矿获得金额为10
+        String minerAddress = transaction.getTransOutput().getRecipientAddress();
+        TransactionInput transactionInput = new TransactionInput(null, "geniusblock");
+        TransactionOutput transactionOutput = new TransactionOutput(minerAddress);
+        // 挖到矿了，对transaction进行更改，暂时设置挖矿获得金额为10
         transaction.setAmount(10);
         transaction.setTransInput(transactionInput);
         transaction.setTransOutput(transactionOutput);
         transaction.setTractionId(transaction);
         return transaction;
     }
-
 
 
     /**

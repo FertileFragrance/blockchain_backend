@@ -44,16 +44,18 @@ public class ChainsUtil {
 
     /**
      * 查询地址上所有链上的总余额
-     * @param address
+     *
+     * @param address 地址
      * @return 返回的是每条链上的余额的相加的结果
      */
-    public  static  double getAllBlance(String address){
-        double allBalance=0;
-        List<BlockChain> blockChains=getBlockchains();
-        for(int i=0;i<blockChains.size();i++){//遍历所有链
-            allBalance+=blockChains.get(i).getBalance(address);
+    public static double getAllBalance(String address) {
+        double allBalance = 0;
+        List<BlockChain> blockChains = getBlockchains();
+        // 遍历所有链
+        for (int i = 0; i < blockChains.size(); i++) {
+            allBalance += blockChains.get(i).getBalance(address);
         }
-        return  allBalance;
+        return allBalance;
     }
 
 }

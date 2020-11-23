@@ -14,7 +14,7 @@ public class TransactionOutput {
     /**
      * 接收者地址（锁定脚本） ：接收方的公钥的哈希，可通过接收者地址反向推出，故在转账时只需知道地址。
      */
-    private  String recipientAddress;
+    private String recipientAddress;
 
     /**
      * 公钥的hash值
