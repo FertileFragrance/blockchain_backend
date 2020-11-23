@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
             nonce ++;
         } while (hexHash.startsWith(ChainsUtil.getAimedStr()));
         BlockChain newBlockChain = new BlockChain(nonce, hexHash);
+        //此处保存链
         return null;
     }
 

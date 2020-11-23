@@ -29,6 +29,16 @@ public class ChainsUtil {
     private static final List<BlockChain> BLOCKCHAINS = new ArrayList<>();
 
     /**
+     * 挖矿难度
+     */
+    private static int difficulty = 6;
+
+    /**
+     * 目标字符串
+     */
+    private static final String aimedStr = repeat("0", difficulty);
+
+    /**
      * 给每条区块链增加一个区块
      */
     public static void updateChains() {
@@ -57,5 +67,41 @@ public class ChainsUtil {
         }
         return allBalance;
     }
+
+
+    /**
+     * 设置和获取难度
+     * @param dif 难度
+     */
+    public static void setDifficulty(int dif) {
+        difficulty = dif;
+    }
+
+    public static int getDifficulty() {
+        return difficulty;
+    }
+
+    /**
+     * 获取目标字符串
+     */
+
+    public static String getAimedStr() {
+        return aimedStr;
+    }
+
+    /**
+     *重复字符串
+     * @param str 字符串
+     * @param repeat 重复次数
+     * @return 重复后字符串
+     */
+    private static String repeat(String str, int repeat) {
+        final StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < repeat; i++) {
+            buf.append(str);
+        }
+        return buf.toString();
+    }
+
 
 }
