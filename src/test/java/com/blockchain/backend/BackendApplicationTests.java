@@ -24,4 +24,10 @@ class BackendApplicationTests {
         assert block21.getCurrentBlockHashPointer().equals(block22.getBlockHead().getPreviousBlockHashPointer());
     }
 
+    @Test
+    void testNewChain() {
+        BlockChain blockChain = new BlockChain(256, "333");
+        System.out.println(blockChain.getLastBlock().getBlockHead().getNonce());
+    }
+
 }

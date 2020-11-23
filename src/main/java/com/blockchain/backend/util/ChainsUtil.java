@@ -36,7 +36,7 @@ public class ChainsUtil {
     /**
      * 目标字符串
      */
-    private static final String aimedStr = repeat("0", difficulty);
+    private static final String AIMED_STR = repeat("0", difficulty);
 
     /**
      * 给每条区块链增加一个区块
@@ -68,9 +68,9 @@ public class ChainsUtil {
         return allBalance;
     }
 
-
     /**
      * 设置和获取难度
+     *
      * @param dif 难度
      */
     public static void setDifficulty(int dif) {
@@ -84,14 +84,14 @@ public class ChainsUtil {
     /**
      * 获取目标字符串
      */
-
     public static String getAimedStr() {
-        return aimedStr;
+        return AIMED_STR;
     }
 
     /**
-     *重复字符串
-     * @param str 字符串
+     * 重复字符串
+     *
+     * @param str    字符串
      * @param repeat 重复次数
      * @return 重复后字符串
      */
@@ -102,6 +102,5 @@ public class ChainsUtil {
         }
         return buf.toString();
     }
-
 
 }

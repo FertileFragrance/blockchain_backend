@@ -9,6 +9,7 @@ import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.util.CalculateUtil;
 import com.blockchain.backend.util.ChainsUtil;
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.SetDefaultAddressVO;
 import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.BeanUtils;
@@ -78,11 +79,11 @@ public class UserServiceImpl implements UserService {
         String hexHash;//十六进制的hash
         do {
             hexHash = CalculateUtil.applySha256(Long.toString(nonce));
-            nonce ++;
+            nonce++;
         } while (hexHash.startsWith(ChainsUtil.getAimedStr()));
         BlockChain newBlockChain = new BlockChain(nonce, hexHash);
-        //此处保存链
-        return null;
+        // 此处保存链
+        return ResponseVO.buildSuccess("mine success", newBlockChain.getLastBlock().getBlockHead().getNonce());
     }
 
     @Override
@@ -143,6 +144,23 @@ public class UserServiceImpl implements UserService {
         // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
         // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
         return null;
+    }
+
+    @Override
+    public ResponseVO setDefaultAddress(SetDefaultAddressVO setDefaultAddressVO) {
+        List<com.blockchain.backend.entity.User> users =
+                userMapper.findByUsername(setDefaultAddressVO.getUsername());
+        assert users.size() == 1;
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        int index = setDefaultAddressVO.getIndexNumber();
+        if (index < 0 || index >= userPojo.getWallet().getBitcoinAddresses().size()) {
+            return ResponseVO.buildFailure("wrong index number");
+        }
+        userPojo.getWallet().setDefaultAddressIndex(index);
+        userPojo.serializeWallet();
+        return ResponseVO.buildSuccess("set default address success");
     }
 
 }

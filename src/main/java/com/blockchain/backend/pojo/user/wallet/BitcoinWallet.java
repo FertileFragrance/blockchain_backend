@@ -28,4 +28,9 @@ public class BitcoinWallet implements Serializable {
      */
     private final ArrayList<String> bitcoinAddresses = new ArrayList<>();
 
+    /**
+     * 默认地址，用户刚注册时为0
+     */
+    private int defaultAddressIndex = 0;
+
 }

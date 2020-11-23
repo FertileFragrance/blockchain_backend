@@ -2,6 +2,7 @@ package com.blockchain.backend.controller;
 
 import com.blockchain.backend.service.UserService;
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.SetDefaultAddressVO;
 import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,17 @@ public class UserController {
     @PostMapping("/transferAccount")
     public ResponseVO transferAccount(@RequestBody TransferAccountVO transferAccountVO) {
         return this.userService.transferAccount(transferAccountVO);
+    }
+
+    /**
+     * 处理用户设置默认地址请求
+     *
+     * @param setDefaultAddressVO 设置默认地址对象
+     * @return 包装好的视图层回应对象
+     */
+    @PostMapping("/setDefaultAddress")
+    public ResponseVO setDefaultAddress(@RequestBody SetDefaultAddressVO setDefaultAddressVO) {
+        return this.userService.setDefaultAddress(setDefaultAddressVO);
     }
 
 }

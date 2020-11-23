@@ -1,6 +1,7 @@
 package com.blockchain.backend.service;
 
 import com.blockchain.backend.vo.ResponseVO;
+import com.blockchain.backend.vo.SetDefaultAddressVO;
 import com.blockchain.backend.vo.TransferAccountVO;
 import com.blockchain.backend.vo.UserVO;
 
@@ -63,5 +64,13 @@ public interface UserService {
      * @return 包装好的视图层回应对象
      */
     ResponseVO transferAccount(TransferAccountVO transferAccountVO);
+
+    /**
+     * 用户设置默认地址
+     *
+     * @param setDefaultAddressVO 视图层设置地址对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO setDefaultAddress(SetDefaultAddressVO setDefaultAddressVO);
 
 }
