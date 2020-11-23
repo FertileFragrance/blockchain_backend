@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import static com.blockchain.backend.pojo.user.User.FILEPATH_ROOT;
 
@@ -75,14 +76,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO mine(UserVO userVO) {
         // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
-        long nonce = 0;
-        String hexHash;//十六进制的hash
+        String hexHash;
+        Random random = new Random();
+        ArrayList<Long> existedNonce = new ArrayList<>();
+        long nonce;
+        String blockhead = "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699";
+
+        while1:
         do {
-            hexHash = CalculateUtil.applySha256(Long.toString(nonce));
-            nonce++;
-        } while (hexHash.startsWith(ChainsUtil.getAimedStr()));
+            nonce = random.nextLong();
+            hexHash = CalculateUtil.applySha256(CalculateUtil.applySha256(Long.toString(nonce)+blockhead));
+            System.out.println(nonce);
+            if (existedNonce.size()!=0) {
+                for (long existedNon: existedNonce) {
+                    if (existedNon == nonce) {
+                        continue while1;
+                    }
+                }
+            }
+        } while (!hexHash.startsWith(ChainsUtil.getAimedStr()));
+        existedNonce.add(nonce);
         BlockChain newBlockChain = new BlockChain(nonce, hexHash);
-        // 此处保存链
         return ResponseVO.buildSuccess("mine success", newBlockChain.getLastBlock().getBlockHead().getNonce());
     }
 

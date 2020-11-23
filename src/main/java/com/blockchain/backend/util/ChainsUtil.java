@@ -31,7 +31,7 @@ public class ChainsUtil {
     /**
      * 挖矿难度
      */
-    private static int difficulty = 6;
+    private static int difficulty = 5;
 
     /**
      * 目标字符串
