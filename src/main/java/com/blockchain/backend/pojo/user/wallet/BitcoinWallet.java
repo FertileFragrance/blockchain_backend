@@ -1,6 +1,7 @@
 package com.blockchain.backend.pojo.user.wallet;
 
 import lombok.Data;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
  * @author OD
  */
 @Data
+@Setter
 public class BitcoinWallet implements Serializable {
 
     /**
@@ -26,7 +28,7 @@ public class BitcoinWallet implements Serializable {
     /**
      * 比特币地址，由公钥生成
      */
-    private final ArrayList<String> bitcoinAddresses = new ArrayList<>();
+    private  ArrayList<String> bitcoinAddresses = new ArrayList<>();
 
     /**
      * 默认地址，用户刚注册时为0

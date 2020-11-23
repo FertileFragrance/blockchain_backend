@@ -103,4 +103,28 @@ public class ChainsUtil {
         return buf.toString();
     }
 
+    public static void addNormalTransaction(String sender,String recipient,double amount){
+        List<BlockChain> blockChains=getBlockchains();
+        double needGive=amount;
+        for(int i=0;i<blockChains.size();i++){//遍历每一条链
+            //首先判断转的金额是不是已经够了
+            if(needGive==0){
+                break;
+            }
+            //对每一条链查询余额
+            BlockChain blockChain=blockChains.get(i);
+            if(blockChain.getBalance(sender)==0){//付款人在该链上没钱，跳过
+                continue;
+            }
+            if(blockChain.getBalance(sender)<=needGive){//如果有钱，且小于needgive,就全转过去,同时更新needGive
+                blockChain.addNormalTransaction(sender,recipient,blockChain.getBalance(sender),blockChain);
+                needGive=needGive-blockChain.getBalance(sender);
+            }
+            if(blockChain.getBalance(sender)>needGive){//如果钱多于needGive，则转needGive的数额过去,同时转账完成，跳出
+                blockChain.addNormalTransaction(sender,recipient,needGive,blockChain);
+                needGive=0;
+                break;
+            }
+        }
+    }
 }

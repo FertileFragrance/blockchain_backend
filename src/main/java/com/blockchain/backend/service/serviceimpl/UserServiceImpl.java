@@ -141,8 +141,46 @@ public class UserServiceImpl implements UserService {
         User sender = new User();
         BeanUtils.copyProperties(senders.get(0), sender);
         sender.deserializeWallet();
+        ArrayList<String> senderBitcoinAddress=sender.getWallet().getBitcoinAddresses();
         // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
         // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
+        String [] recipientNames=transferAccountVO.getRecipientNames();
+        Double [] moneyNeedGive=transferAccountVO.getMoneys();
+        for(int i=0;i<recipientNames.length;i++){//遍历收款人，每个收款人都要收到一笔转账
+            String recipentName=recipientNames[i];
+            double moneyNeed=moneyNeedGive[i];
+
+            //获得默认收款地址
+            List<com.blockchain.backend.entity.User> recipients=userMapper.findByUsername(recipentName);
+            String recipientAddress="";
+            User recipient=new User();
+            BeanUtils.copyProperties(recipients.get(i),recipient);
+            recipient.deserializeWallet();
+            int defaultAddressIndex=recipient.getWallet().getDefaultAddressIndex();
+            ArrayList<String> recipientBitcoinAddress=recipient.getWallet().getBitcoinAddresses();
+            recipientAddress=recipientBitcoinAddress.get(defaultAddressIndex);
+
+            for(int j=0;j<senderBitcoinAddress.size();j++){//遍历付款人的地址
+                String senderAddress=senderBitcoinAddress.get(j);
+                //查询该地址有多少钱
+                double moneyOfSender=ChainsUtil.getAllBalance(senderAddress);
+                if(moneyOfSender==0){
+                    continue;
+                }
+                if(moneyOfSender<=moneyNeed){//该地址余额小moneyNeedGive,则把所有钱全转过去,同时更新moneyWillGive
+                    ChainsUtil.addNormalTransaction(senderAddress,recipientAddress,moneyOfSender);
+                    moneyNeed-=moneyOfSender;
+                }
+                if(moneyOfSender>moneyNeed){//该地址余额大于moneyWillGive，则转等额的钱即可，同时到该收款人的转账完成
+                    ChainsUtil.addNormalTransaction(senderAddress,recipientAddress,moneyNeed);
+                    moneyNeed=0;
+                    break;
+                }
+            }
+
+
+        }
+
         return null;
     }
 
