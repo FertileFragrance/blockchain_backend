@@ -1,8 +1,9 @@
 package com.blockchain.backend.service.serviceimpl;
 
+import com.blockchain.backend.dao.ChainMapper;
 import com.blockchain.backend.dao.UserMapper;
+import com.blockchain.backend.entity.Chain;
 import com.blockchain.backend.pojo.chain.BlockChain;
-import com.blockchain.backend.pojo.chain.block.Block;
 import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.pojo.user.wallet.BitcoinWallet;
 import com.blockchain.backend.service.UserService;
@@ -23,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static com.blockchain.backend.pojo.user.User.FILEPATH_ROOT;
+import static com.blockchain.backend.pojo.user.User.USER_FILEPATH_ROOT;
 
 /**
  * @author 听取WA声一片
@@ -34,8 +35,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserMapper userMapper) {
+    @Autowired
+    private final ChainMapper chainMapper;
+
+    public UserServiceImpl(UserMapper userMapper, ChainMapper chainMapper) {
         this.userMapper = userMapper;
+        this.chainMapper = chainMapper;
     }
 
 
@@ -76,6 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseVO mine(UserVO userVO) {
         // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
+        /*
         String hexHash;
         Random random = new Random();
         ArrayList<Long> existedNonce = new ArrayList<>();
@@ -98,21 +104,57 @@ public class UserServiceImpl implements UserService {
         existedNonce.add(nonce);
         BlockChain newBlockChain = new BlockChain(nonce, hexHash);
         return ResponseVO.buildSuccess("mine success", newBlockChain.getLastBlock().getBlockHead().getNonce());
+         */
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
+        assert users.size() == 1;
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        long nonce = 0;
+        // 十六进制的hash
+        String hexHash;
+        List<Chain> chains;
+        while (true) {
+            hexHash = CalculateUtil.applySha256(Long.toString(nonce));
+            if (hexHash.startsWith(ChainsUtil.getAimedStr())) {
+                chains = chainMapper.findByNonce(nonce);
+                if (chains.isEmpty()) {
+                    BlockChain newBlockChain = new BlockChain(nonce, userPojo.getWallet()
+                            .getBitcoinAddresses().get(userPojo.getWallet().getDefaultAddressIndex()));
+                    Chain chainEntity = new Chain(nonce);
+                    chainMapper.save(chainEntity);
+                    ChainsUtil.serializeBlockChain(newBlockChain);
+                    return ResponseVO.buildSuccess("mine success", nonce);
+                } else {
+                    nonce++;
+                }
+            } else {
+                nonce++;
+            }
+        }
     }
 
     @Override
     public ResponseVO queryBalance(UserVO userVO) {
-        // TODO 在BlockChain类和ChainsUtil中添加查询单条链和所有链的余额后，完成此方法，用用户所有的地址遍历查询一遍
         List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
         BitcoinWallet wallet = userPojo.getWallet();
-        for (String address : wallet.getBitcoinAddresses()) {
-            // 查询
+        List<Chain> chains = (List<Chain>) chainMapper.findAll();
+        if (chains.size() != ChainsUtil.getBlockchains().size()) {
+            List<Long> nonces = new ArrayList<>();
+            for (Chain chain : chains) {
+                nonces.add(chain.getNonce());
+            }
+            ChainsUtil.deserializeAllChains(nonces);
         }
-        return null;
+        double total = 0;
+        for (String address : wallet.getBitcoinAddresses()) {
+            total += ChainsUtil.getAllBalance(address);
+        }
+        return ResponseVO.buildSuccess("query balance success", total);
     }
 
     @Override
@@ -122,7 +164,7 @@ public class UserServiceImpl implements UserService {
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
-        try (FileWriter fw = new FileWriter(FILEPATH_ROOT + userPojo.getUsername() + ".txt", false)) {
+        try (FileWriter fw = new FileWriter(USER_FILEPATH_ROOT + userPojo.getUsername() + ".txt", false)) {
             fw.flush();
         } catch (IOException e) {
             System.err.println("rewrite file error!");
@@ -155,46 +197,45 @@ public class UserServiceImpl implements UserService {
         User sender = new User();
         BeanUtils.copyProperties(senders.get(0), sender);
         sender.deserializeWallet();
-        ArrayList<String> senderBitcoinAddress=sender.getWallet().getBitcoinAddresses();
+        ArrayList<String> senderBitcoinAddress = sender.getWallet().getBitcoinAddresses();
         // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
         // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
-        String [] recipientNames=transferAccountVO.getRecipientNames();
-        Double [] moneyNeedGive=transferAccountVO.getMoneys();
-        for(int i=0;i<recipientNames.length;i++){//遍历收款人，每个收款人都要收到一笔转账
-            String recipentName=recipientNames[i];
-            double moneyNeed=moneyNeedGive[i];
-
-            //获得默认收款地址
-            List<com.blockchain.backend.entity.User> recipients=userMapper.findByUsername(recipentName);
-            String recipientAddress="";
-            User recipient=new User();
-            BeanUtils.copyProperties(recipients.get(i),recipient);
+        String[] recipientNames = transferAccountVO.getRecipientNames();
+        Double[] moneyNeedGive = transferAccountVO.getMoneys();
+        // 遍历收款人，每个收款人都要收到一笔转账
+        for (int i = 0; i < recipientNames.length; i++) {
+            String recipentName = recipientNames[i];
+            double moneyNeed = moneyNeedGive[i];
+            // 获得默认收款地址
+            List<com.blockchain.backend.entity.User> recipients = userMapper.findByUsername(recipentName);
+            String recipientAddress = "";
+            User recipient = new User();
+            BeanUtils.copyProperties(recipients.get(i), recipient);
             recipient.deserializeWallet();
-            int defaultAddressIndex=recipient.getWallet().getDefaultAddressIndex();
-            ArrayList<String> recipientBitcoinAddress=recipient.getWallet().getBitcoinAddresses();
-            recipientAddress=recipientBitcoinAddress.get(defaultAddressIndex);
-
-            for(int j=0;j<senderBitcoinAddress.size();j++){//遍历付款人的地址
-                String senderAddress=senderBitcoinAddress.get(j);
-                //查询该地址有多少钱
-                double moneyOfSender=ChainsUtil.getAllBalance(senderAddress);
-                if(moneyOfSender==0){
+            int defaultAddressIndex = recipient.getWallet().getDefaultAddressIndex();
+            ArrayList<String> recipientBitcoinAddress = recipient.getWallet().getBitcoinAddresses();
+            recipientAddress = recipientBitcoinAddress.get(defaultAddressIndex);
+            // 遍历付款人的地址
+            for (int j = 0; j < senderBitcoinAddress.size(); j++) {
+                String senderAddress = senderBitcoinAddress.get(j);
+                // 查询该地址有多少钱
+                double moneyOfSender = ChainsUtil.getAllBalance(senderAddress);
+                if (moneyOfSender == 0) {
                     continue;
                 }
-                if(moneyOfSender<=moneyNeed){//该地址余额小moneyNeedGive,则把所有钱全转过去,同时更新moneyWillGive
-                    ChainsUtil.addNormalTransaction(senderAddress,recipientAddress,moneyOfSender);
-                    moneyNeed-=moneyOfSender;
+                // 该地址余额小moneyNeedGive,则把所有钱全转过去,同时更新moneyWillGive
+                if (moneyOfSender <= moneyNeed) {
+                    ChainsUtil.addNormalTransaction(senderAddress, recipientAddress, moneyOfSender);
+                    moneyNeed -= moneyOfSender;
                 }
-                if(moneyOfSender>moneyNeed){//该地址余额大于moneyWillGive，则转等额的钱即可，同时到该收款人的转账完成
-                    ChainsUtil.addNormalTransaction(senderAddress,recipientAddress,moneyNeed);
-                    moneyNeed=0;
+                // 该地址余额大于moneyWillGive，则转等额的钱即可，同时到该收款人的转账完成
+                if (moneyOfSender > moneyNeed) {
+                    ChainsUtil.addNormalTransaction(senderAddress, recipientAddress, moneyNeed);
+                    moneyNeed = 0;
                     break;
                 }
             }
-
-
         }
-
         return null;
     }
 

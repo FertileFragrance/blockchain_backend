@@ -30,4 +30,8 @@ class BackendApplicationTests {
         System.out.println(blockChain.getLastBlock().getBlockHead().getNonce());
     }
 
+    void testSerialize() {
+
+    }
+
 }

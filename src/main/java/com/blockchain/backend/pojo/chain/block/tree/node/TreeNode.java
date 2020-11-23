@@ -2,13 +2,15 @@ package com.blockchain.backend.pojo.chain.block.tree.node;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Merkle树的节点
  *
  * @author 听取WA声一片
  */
 @Data
-public class TreeNode {
+public class TreeNode implements Serializable {
 
     /**
      * 哈希值

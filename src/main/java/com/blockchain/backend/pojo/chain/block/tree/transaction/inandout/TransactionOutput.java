@@ -4,12 +4,14 @@ package com.blockchain.backend.pojo.chain.block.tree.transaction.inandout;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * @author njuselhx
  */
 @Getter
 @Setter
-public class TransactionOutput {
+public class TransactionOutput implements Serializable {
 
     /**
      * 接收者地址（锁定脚本） ：接收方的公钥的哈希，可通过接收者地址反向推出，故在转账时只需知道地址。

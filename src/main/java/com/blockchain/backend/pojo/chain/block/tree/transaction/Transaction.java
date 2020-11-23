@@ -9,6 +9,7 @@ import com.blockchain.backend.util.ChainsUtil;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -16,7 +17,7 @@ import java.util.*;
  */
 @Setter
 @Getter
-public class Transaction {
+public class Transaction implements Serializable {
 
     /**
      * 交易ID: 是每笔交易的标识，对交易做hash运算得到

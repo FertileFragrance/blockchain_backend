@@ -5,6 +5,7 @@ import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.util.CalculateUtil;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @author 听取WA声一片
  */
 @Getter
-public class MerkleTree {
+public class MerkleTree implements Serializable {
 
     /**
      * 根哈希

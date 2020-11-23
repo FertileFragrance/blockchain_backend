@@ -3,6 +3,8 @@ package com.blockchain.backend.pojo.chain.block.tree.transaction.inandout;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * 交易输入类
  *
@@ -10,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TransactionInput {
+public class TransactionInput implements Serializable {
 
     /**
      * 所引用的UTXO所在的交易的ID

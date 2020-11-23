@@ -13,7 +13,7 @@ import java.io.*;
 @Data
 public class User {
 
-    public static final String FILEPATH_ROOT = "src/main/resources/accounts/";
+    public static final String USER_FILEPATH_ROOT = "src/main/resources/accounts/";
 
     private Integer id;
     private String username;
@@ -49,11 +49,11 @@ public class User {
      * 序列化钱包对象
      */
     public void serializeWallet() {
-        try (FileOutputStream fos = new FileOutputStream(FILEPATH_ROOT + this.username + ".txt");
+        try (FileOutputStream fos = new FileOutputStream(USER_FILEPATH_ROOT + this.username + ".txt");
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this.wallet);
         } catch (IOException e) {
-            System.err.println("serialize error!");
+            System.err.println("wallet serialize error!");
         }
     }
 
@@ -61,11 +61,11 @@ public class User {
      * 反序列化钱包对象
      */
     public void deserializeWallet() {
-        try (FileInputStream fis = new FileInputStream(FILEPATH_ROOT + this.username + ".txt");
+        try (FileInputStream fis = new FileInputStream(USER_FILEPATH_ROOT + this.username + ".txt");
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             this.wallet = (BitcoinWallet) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("deserialize error!");
+            System.err.println("wallet deserialize error!");
         }
     }
 

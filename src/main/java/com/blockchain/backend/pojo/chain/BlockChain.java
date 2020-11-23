@@ -7,6 +7,7 @@ import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.Transac
 import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.TransactionOutput;
 import com.blockchain.backend.util.ChainsUtil;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -14,7 +15,7 @@ import java.util.*;
  *
  * @author 听取WA声一片
  */
-public class BlockChain {
+public class BlockChain implements Serializable {
 
     /**
      * 链中已有的最后一个区块

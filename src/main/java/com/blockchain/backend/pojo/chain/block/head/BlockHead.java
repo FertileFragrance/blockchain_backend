@@ -2,13 +2,15 @@ package com.blockchain.backend.pojo.chain.block.head;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 块头
  *
  * @author 听取WA声一片
  */
 @Data
-public class BlockHead {
+public class BlockHead implements Serializable {
 
     /**
      * 软件版本号

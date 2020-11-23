@@ -7,6 +7,7 @@ import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.util.CalculateUtil;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,7 +18,7 @@ import java.util.TimerTask;
  * @author 听取WA声一片
  */
 @Getter
-public class Block {
+public class Block implements Serializable {
 
     /**
      * 魔数

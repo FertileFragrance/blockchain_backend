@@ -2,6 +2,7 @@ package com.blockchain.backend.util;
 
 import com.blockchain.backend.pojo.chain.BlockChain;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class ChainsUtil {
      */
     private ChainsUtil() {
     }
+
+    public static final String CHAIN_FILEPATH_ROOT = "src/main/resources/chains/";
 
     /**
      * 一条区块链的比特币数
@@ -60,10 +63,9 @@ public class ChainsUtil {
      */
     public static double getAllBalance(String address) {
         double allBalance = 0;
-        List<BlockChain> blockChains = getBlockchains();
         // 遍历所有链
-        for (int i = 0; i < blockChains.size(); i++) {
-            allBalance += blockChains.get(i).getBalance(address);
+        for (BlockChain blockchain : BLOCKCHAINS) {
+            allBalance += blockchain.getBalance(address);
         }
         return allBalance;
     }
@@ -103,28 +105,90 @@ public class ChainsUtil {
         return buf.toString();
     }
 
-    public static void addNormalTransaction(String sender,String recipient,double amount){
-        List<BlockChain> blockChains=getBlockchains();
-        double needGive=amount;
-        for(int i=0;i<blockChains.size();i++){//遍历每一条链
-            //首先判断转的金额是不是已经够了
-            if(needGive==0){
+    public static void addNormalTransaction(String sender, String recipient, double amount) {
+        List<BlockChain> blockChains = getBlockchains();
+        double needGive = amount;
+        // 遍历每一条链
+        for (BlockChain chain : blockChains) {
+            // 首先判断转的金额是不是已经够了
+            if (needGive == 0) {
                 break;
             }
-            //对每一条链查询余额
-            BlockChain blockChain=blockChains.get(i);
-            if(blockChain.getBalance(sender)==0){//付款人在该链上没钱，跳过
+            // 对每一条链查询余额
+            // 付款人在该链上没钱，跳过
+            if (chain.getBalance(sender) == 0) {
                 continue;
             }
-            if(blockChain.getBalance(sender)<=needGive){//如果有钱，且小于needgive,就全转过去,同时更新needGive
-                blockChain.addNormalTransaction(sender,recipient,blockChain.getBalance(sender),blockChain);
-                needGive=needGive-blockChain.getBalance(sender);
+            // 如果有钱，且小于needGive,就全转过去,同时更新needGive
+            if (chain.getBalance(sender) <= needGive) {
+                chain.addNormalTransaction(sender, recipient, chain.getBalance(sender), chain);
+                needGive = needGive - chain.getBalance(sender);
             }
-            if(blockChain.getBalance(sender)>needGive){//如果钱多于needGive，则转needGive的数额过去,同时转账完成，跳出
-                blockChain.addNormalTransaction(sender,recipient,needGive,blockChain);
-                needGive=0;
+            // 如果钱多于needGive，则转needGive的数额过去,同时转账完成，跳出
+            if (chain.getBalance(sender) > needGive) {
+                chain.addNormalTransaction(sender, recipient, needGive, chain);
+                needGive = 0;
                 break;
             }
         }
     }
+
+    /**
+     * 序列化全部区块链
+     */
+    public static void serializeAllChains() {
+        for (BlockChain blockchain : BLOCKCHAINS) {
+            serializeBlockChain(blockchain);
+        }
+    }
+
+    /**
+     * 反序列化全部区块链
+     */
+    public static void deserializeAllChains(List<Long> nonces) {
+        for (Long nonce : nonces) {
+            deserializeBlockChain(nonce);
+        }
+    }
+
+    /**
+     * 序列化单个区块链对象
+     *
+     * @param chain 链
+     */
+    public static void serializeBlockChain(BlockChain chain) {
+        try (FileOutputStream fos = new FileOutputStream(
+                CHAIN_FILEPATH_ROOT + chain.getLastBlock().getBlockHead().getNonce() + ".txt");
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(chain);
+        } catch (IOException e) {
+            System.err.println("block chain serialize error!");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 反序列化单个区块链对象
+     *
+     * @param nonce 随机数
+     */
+    private static void deserializeBlockChain(long nonce) {
+        try (FileInputStream fis = new FileInputStream(CHAIN_FILEPATH_ROOT + nonce + ".txt");
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            BlockChain chain = (BlockChain) ois.readObject();
+            boolean flag = true;
+            for (BlockChain blockChain : BLOCKCHAINS) {
+                if (nonce == blockChain.getLastBlock().getBlockHead().getNonce()) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                BLOCKCHAINS.add(chain);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("block chain deserialize error!");
+        }
+    }
+
 }
