@@ -17,6 +17,8 @@ import java.util.List;
 @Getter
 public class MerkleTree implements Serializable {
 
+    private static final long serialVersionUID = 7326159782341727810L;
+
     /**
      * 根哈希
      */
@@ -35,8 +37,8 @@ public class MerkleTree implements Serializable {
     /**
      * 创世区块产生时调用此构造方法
      */
-    public MerkleTree(String address) {
-        Transaction coinBase = new Transaction(address);
+    public MerkleTree(String address, String publicKey) {
+        Transaction coinBase = new Transaction(address, publicKey);
         this.transactions = new ArrayList<>();
         this.transactions.add(coinBase);
         this.merkleRoot = new TreeNode(CalculateUtil.applySha256(coinBase.generateHash()));

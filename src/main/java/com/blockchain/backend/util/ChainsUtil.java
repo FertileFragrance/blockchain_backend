@@ -39,13 +39,12 @@ public class ChainsUtil {
     /**
      * 目标字符串
      */
-    private static final String AIMED_STR = repeat("0", difficulty);
+    private static final String AIMED_STR = repeat(difficulty);
 
     /**
      * 给每条区块链增加一个区块
      */
     public static void updateChains() {
-        // TODO modify
         for (BlockChain blockchain : BLOCKCHAINS) {
             blockchain.addBlockToChain();
         }
@@ -93,19 +92,20 @@ public class ChainsUtil {
     /**
      * 重复字符串
      *
-     * @param str    字符串
      * @param repeat 重复次数
      * @return 重复后字符串
      */
-    private static String repeat(String str, int repeat) {
+    private static String repeat(int repeat) {
         final StringBuilder buf = new StringBuilder();
         for (int i = 0; i < repeat; i++) {
-            buf.append(str);
+            buf.append("0");
         }
         return buf.toString();
     }
 
-    public static void addNormalTransaction(String sender, String recipient, double amount) {
+    public static void addNormalTransaction(String senderAddress, String recipientAddress, String senderPublicKey,
+                                            String recipientPublicKey, String senderPrivateKey, double amount)
+            throws RuntimeException {
         List<BlockChain> blockChains = getBlockchains();
         double needGive = amount;
         // 遍历每一条链
@@ -116,18 +116,19 @@ public class ChainsUtil {
             }
             // 对每一条链查询余额
             // 付款人在该链上没钱，跳过
-            if (chain.getBalance(sender) == 0) {
+            if (chain.getBalance(senderAddress) == 0) {
                 continue;
             }
             // 如果有钱，且小于needGive,就全转过去,同时更新needGive
-            if (chain.getBalance(sender) <= needGive) {
-                chain.addNormalTransaction(sender, recipient, chain.getBalance(sender), chain);
-                needGive = needGive - chain.getBalance(sender);
+            if (chain.getBalance(senderAddress) <= needGive) {
+                chain.addNormalTransaction(senderAddress, recipientAddress, senderPublicKey,
+                        recipientPublicKey, senderPrivateKey, chain.getBalance(senderAddress));
+                needGive = needGive - chain.getBalance(senderAddress);
             }
             // 如果钱多于needGive，则转needGive的数额过去,同时转账完成，跳出
-            if (chain.getBalance(sender) > needGive) {
-                chain.addNormalTransaction(sender, recipient, needGive, chain);
-                needGive = 0;
+            if (chain.getBalance(senderAddress) > needGive) {
+                chain.addNormalTransaction(senderAddress, recipientAddress, senderPublicKey,
+                        recipientPublicKey, senderPrivateKey, needGive);
                 break;
             }
         }

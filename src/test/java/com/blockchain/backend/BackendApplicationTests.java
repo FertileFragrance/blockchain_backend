@@ -26,8 +26,8 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
-        BlockChain chain1 = new BlockChain(0, null);
-        BlockChain chain2 = new BlockChain(1, null);
+        BlockChain chain1 = new BlockChain(0, null, null);
+        BlockChain chain2 = new BlockChain(1, null, null);
         ChainsUtil.updateChains();
         Block block11 = chain1.getLastBlock();
         Block block21 = chain2.getLastBlock();
@@ -41,7 +41,7 @@ class BackendApplicationTests {
 
     @Test
     void testNewChain() {
-        BlockChain blockChain = new BlockChain(256, "333");
+        BlockChain blockChain = new BlockChain(256, "333", null);
         System.out.println(blockChain.getLastBlock().getBlockHead().getNonce());
     }
 
@@ -66,6 +66,17 @@ class BackendApplicationTests {
         nonces.add(1153627L);
         nonces.add(3911299L);
         ChainsUtil.deserializeAllChains(nonces);
+    }
+
+    @Test
+    void testTransaction() {
+        List<Long> nonces = new ArrayList<>();
+        nonces.add(1153627L);
+        ChainsUtil.deserializeAllChains(nonces);
+        System.out.println(ChainsUtil.getBlockchains().get(0).getLastBlock().getMerkleTree().getTransactions().size());
+        for (BlockChain blockChain : ChainsUtil.getBlockchains()) {
+            System.out.println(blockChain.getLastBlock().getMerkleTree().getTransactions());
+        }
     }
 
 }

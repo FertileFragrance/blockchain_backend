@@ -8,9 +8,6 @@ import com.blockchain.backend.util.CalculateUtil;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * 链中的块
@@ -19,6 +16,8 @@ import java.util.TimerTask;
  */
 @Getter
 public class Block implements Serializable {
+
+    private static final long serialVersionUID = 3658432024215900552L;
 
     /**
      * 魔数
@@ -56,9 +55,10 @@ public class Block implements Serializable {
      * @param previousBlockHashPointer 前一个区块的哈希指针，是个定值
      * @param nonce                    挖出的随机数
      */
-    public Block(String previousBlockHashPointer, long nonce, BlockChain belongingChain, String address) {
+    public Block(String previousBlockHashPointer, long nonce,
+                 BlockChain belongingChain, String address, String publicKey) {
         this.blockHead = new BlockHead(previousBlockHashPointer, nonce);
-        this.merkleTree = new MerkleTree(address);
+        this.merkleTree = new MerkleTree(address, publicKey);
         this.currentBlockHashPointer = CalculateUtil.applySha256(previousBlockHashPointer
                 + this.blockHead.getTimeStamp() + this.blockHead.getNonce());
         this.belongingChain = belongingChain;
@@ -85,49 +85,5 @@ public class Block implements Serializable {
         this.merkleTree.insertTransaction(transaction);
         this.blockHead.setTransactionNumber(this.blockHead.getTransactionNumber() + 1);
     }
-
-
-    /**
-     * 定时生成区块
-     * @author OD
-     * @param blockChain 希望增加区块的链
-     */
-//    public void timerBlock(BlockChain blockChain) {
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                Block lastBlock = blockChain.getLastBlock();
-//                Block newBlock = new Block(lastBlock.belongingChain);
-//            }
-//        }, 120000, 120000);//调用方法120000ms后执行，每隔120000ms再次执行
-//    }
-
-
-    /**
-     * 校验HASH的合法性
-     * @param hash 哈希
-     * @param difficulty 难度
-     * @return 是否合法
-     */
-//    public boolean isHashValid(String hash, int difficulty) {
-//        String prefix = repeat("0", difficulty);
-//        return hash.startsWith(prefix);
-//    }
-
-    /**
-     *重复字符串
-     * @param str 字符串
-     * @param repeat 重复次数
-     * @return 重复后字符串
-     */
-    private static String repeat(String str, int repeat) {
-        final StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < repeat; i++) {
-            buf.append(str);
-        }
-        return buf.toString();
-    }
-
 
 }

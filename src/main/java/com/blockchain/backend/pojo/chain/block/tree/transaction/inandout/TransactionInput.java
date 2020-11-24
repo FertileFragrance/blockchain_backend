@@ -2,6 +2,7 @@ package com.blockchain.backend.pojo.chain.block.tree.transaction.inandout;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -12,11 +13,13 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@ToString
 public class TransactionInput implements Serializable {
+
+    private static final long serialVersionUID = 8438916272336407173L;
 
     /**
      * 所引用的UTXO所在的交易的ID
-     * TODO consider changing the current type to "TransactionOutput"
      */
     private String transactionId;
 
@@ -26,29 +29,24 @@ public class TransactionInput implements Serializable {
     private int outputIndex;
 
     /**
-     * 交易发起者地址（解锁脚本，需要用到公钥和私钥）
+     * 交易发起者地址
      */
-
-    private  String senderAddress;
+    private String senderAddress;
 
     /**
-     * 交易签名
+     * 解锁脚本，即发送者的私钥
      */
-    private String signature;
+    private String unlockScript;
 
-    /**
-     * 公钥
-     */
-    private String publicKey;
-
-    public TransactionInput(String transactionId,  String senderAddress) {
+    public TransactionInput(String transactionId, String senderAddress, String privateKey) {
         this.transactionId = transactionId;
         this.senderAddress = senderAddress;
+        this.unlockScript = privateKey;
     }
 
     @Override
     public TransactionInput clone() {
-        return new TransactionInput(this.transactionId,  this.senderAddress);
+        return new TransactionInput(this.transactionId,  this.senderAddress, this.unlockScript);
     }
 
 }

@@ -5,6 +5,7 @@ import com.blockchain.backend.pojo.chain.block.tree.MerkleTree;
 import com.blockchain.backend.pojo.chain.block.tree.transaction.Transaction;
 import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.TransactionInput;
 import com.blockchain.backend.pojo.chain.block.tree.transaction.inandout.TransactionOutput;
+import com.blockchain.backend.util.CalculateUtil;
 import com.blockchain.backend.util.ChainsUtil;
 
 import java.io.Serializable;
@@ -17,6 +18,8 @@ import java.util.*;
  */
 public class BlockChain implements Serializable {
 
+    private static final long serialVersionUID = -1612180084475263255L;
+
     /**
      * 链中已有的最后一个区块
      */
@@ -28,8 +31,8 @@ public class BlockChain implements Serializable {
      *
      * @param nonce 随机数
      */
-    public BlockChain(long nonce, String address) {
-        this.lastBlock = new Block("I'm Genesis Block.", nonce, this, address);
+    public BlockChain(long nonce, String address, String publicKey) {
+        this.lastBlock = new Block("I'm Genesis Block.", nonce, this, address, publicKey);
         ChainsUtil.getBlockchains().add(this);
     }
 
@@ -50,7 +53,7 @@ public class BlockChain implements Serializable {
     }
 
     /**
-     * 增加交易记录，可修改
+     * 增加交易记录
      *
      * @param transactions 要增加的交易
      */
@@ -128,42 +131,40 @@ public class BlockChain implements Serializable {
     /**
      * 添加转账交易
      *
-     * @param sender 发送者地址
-     * @param recipient 接收者地址
-     * @param amount 数额
-     * @param blockChain 增加的交易所在的链
+     * @param senderAddress      发送者地址
+     * @param recipientAddress   接收者地址
+     * @param senderPublicKey    发送者公钥
+     * @param recipientPublicKey 接收者公钥
+     * @param senderPrivateKey   发送者私钥
+     * @param amount             数额
      */
-    public void addNormalTransaction(String sender, String recipient, double amount, BlockChain blockChain) {
-        System.out.println("添加普通交易：   " + sender + "---->" + recipient + "   转账金额为： " + amount);
-        // 得到最新区块
-        Block last = blockChain.getLastBlock();
+    public void addNormalTransaction(String senderAddress, String recipientAddress, String senderPublicKey,
+                                     String recipientPublicKey, String senderPrivateKey, double amount)
+            throws RuntimeException {
         // 最新区块中的树包含了最全的交易信息，相当于最新的账本
-        //List<Transaction> transactionList = last.getMerkleTree().getTransactions();
-        Transaction[] transactions=blockChain.getMyUTXOs(sender);
-        List<Transaction> transactionList=new ArrayList<>();
-        for(int i=0;i<transactions.length;i++){
-            transactionList.add(transactions[i]);
-        }
-    // 钱不够，交易失败
-        double resAmount = blockChain.getBalance(sender);
+        Transaction[] transactionList = this.getMyUTXOs(senderAddress);
+        // 钱不够，交易失败
+        double resAmount = this.getBalance(senderAddress);
         if (resAmount < amount) {
             System.out.println("余额不足，交易失败");
             return;
         }
-        // 遍历账本，找到足够的金额（ 即找到足够的到A中去的output，使这些output中的value和大于需要支付的amount)
+        // 遍历账本，找到足够的金额，即找到足够的到A中去的output，使这些output中的value和大于需要支付的amount
         // 同时，由于后续需要把output转input，故需要记录找到的output所在的交易的id，以及在output[]中的位置
         // 用于存放找到的将要花费的output
         List<TransactionOutput> willPay = new ArrayList<>();
         List<String> transactionId = new ArrayList<>();
         List<Double> amountOfEachTransaction = new ArrayList<>();
         double valueFound = 0;
-        A:
-        // 遍历交易  从1开始遍历（不知道为什么会在创建区块链时merkleTree里会自己加一个莫名奇妙的交易）
         for (Transaction thisTransaction : transactionList) {
             TransactionOutput transactionOutputFalse = thisTransaction.getTransOutput();
             // 不是sender的比特币，跳过
-            if (!transactionOutputFalse.getRecipientAddress().equals(sender)) {
+            if (!transactionOutputFalse.getRecipientAddress().equals(senderAddress)) {
                 continue;
+            }
+            // 验证交易，如果失败则抛出异常
+            if (!CalculateUtil.isCorrespondingKey(senderPrivateKey, senderPublicKey)) {
+                throw new RuntimeException("invalid sender!");
             }
             // 是属于sender的比特币
             double amountOfThis = thisTransaction.getAmount();
@@ -172,15 +173,15 @@ public class BlockChain implements Serializable {
             valueFound += thisTransaction.getAmount();
             transactionId.add(thisTransaction.getTransactionId());
             if (valueFound > amount) {
-                break A;
+                break;
             }
         }
-        // 至此，willPay中记录了所有将要用于转账的output，TxidOutputIndex中记录了output所在的交易id，amountOfEachTransaction记录了每一笔交易的数额
-        // output转input 即建立新的input，使input中的交易id能和 willPay中的output一 一对应起来
+        // 至此，willPay中记录了所有将要用于转账的output，amountOfEachTransaction记录了每一笔交易的数额
+        // output转input，即建立新的input，使input中的交易id能和willPay中的output一一对应起来
         // 最后会多一笔找零交易，单独处理
         TransactionInput[] transactionInput = new TransactionInput[willPay.size() + 1];
         for (int i = 0; i < transactionInput.length; i++) {
-            transactionInput[i] = new TransactionInput(null, sender);
+            transactionInput[i] = new TransactionInput(null, senderAddress, senderPrivateKey);
         }
         // 最后两笔input也单独处理
         for (int i = 0; i < transactionInput.length - 2; i++) {
@@ -194,8 +195,9 @@ public class BlockChain implements Serializable {
         // 最后一笔willPay需要拆分成两个交易
         for (int i = 0; i < toRecipient.length - 2; i++) {
             toRecipient[i] = willPay.get(i);
-            toRecipient[i].setRecipientAddress(recipient);
-            Transaction transaction = new Transaction(transactionInput[i], toRecipient[i], amountOfEachTransaction.get(i));
+            toRecipient[i].setRecipientAddress(recipientAddress);
+            Transaction transaction = new Transaction
+                    (transactionInput[i], toRecipient[i], amountOfEachTransaction.get(i));
             transactionWillAdd[i] = transaction;
         }
         // 至此，willPay中仅剩最后一笔willPay
@@ -206,16 +208,19 @@ public class BlockChain implements Serializable {
         // 最后一笔要给的金额
         double lastGive = lastAmount - changeBack;
         transactionInput[transactionInput.length - 2].setTransactionId(transactionId.get(transactionId.size() - 1));
-        toRecipient[toRecipient.length - 2] = new TransactionOutput(recipient);
-        Transaction transaction = new Transaction(transactionInput[transactionInput.length - 2], toRecipient[toRecipient.length - 2], lastGive);
+        toRecipient[toRecipient.length - 2] = new TransactionOutput(recipientAddress, recipientPublicKey);
+        Transaction transaction = new Transaction(transactionInput
+                [transactionInput.length - 2], toRecipient[toRecipient.length - 2], lastGive);
         transactionWillAdd[transactionWillAdd.length - 2] = transaction;
         transactionInput[transactionInput.length - 1].setTransactionId(transactionId.get(transactionId.size() - 1));
         // 找零
-        toRecipient[toRecipient.length - 1] = new TransactionOutput(sender);
-        Transaction lastTransaction = new Transaction(transactionInput[transactionInput.length - 1], toRecipient[toRecipient.length - 1], changeBack);
+        toRecipient[toRecipient.length - 1] = new TransactionOutput(senderAddress, senderPublicKey);
+        Transaction lastTransaction = new Transaction(transactionInput
+                [transactionInput.length - 1], toRecipient[toRecipient.length - 1], changeBack);
         transactionWillAdd[transactionWillAdd.length - 1] = lastTransaction;
         // 添加交易
-        blockChain.addTransaction(transactionWillAdd);
+        System.err.println(transactionWillAdd.length);
+        this.addTransaction(transactionWillAdd);
     }
 
 }

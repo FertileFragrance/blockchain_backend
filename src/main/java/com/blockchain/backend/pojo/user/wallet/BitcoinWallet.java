@@ -15,6 +15,8 @@ import java.util.ArrayList;
 @Setter
 public class BitcoinWallet implements Serializable {
 
+    private static final long serialVersionUID = -7267263382888651497L;
+
     /**
      * 私钥
      */

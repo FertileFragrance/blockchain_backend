@@ -12,6 +12,8 @@ import java.io.Serializable;
 @Data
 public class BlockHead implements Serializable {
 
+    private static final long serialVersionUID = -1555629537232840996L;
+
     /**
      * 软件版本号
      */
@@ -21,11 +23,6 @@ public class BlockHead implements Serializable {
      * 前一个块的哈希指针
      */
     public final String previousBlockHashPointer;
-
-    /**
-     * 创世区块的前指针hash(OD)
-     */
-    public String genesisPreHash;
 
     /**
      * 时间戳，由获取系统时间得到

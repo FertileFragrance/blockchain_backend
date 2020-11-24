@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import static com.blockchain.backend.pojo.user.User.USER_FILEPATH_ROOT;
 
@@ -94,8 +93,9 @@ public class UserServiceImpl implements UserService {
             if (hexHash.startsWith(ChainsUtil.getAimedStr())) {
                 chains = chainMapper.findByNonce(nonce);
                 if (chains.isEmpty()) {
-                    BlockChain newBlockChain = new BlockChain(nonce, userPojo.getWallet()
-                            .getBitcoinAddresses().get(userPojo.getWallet().getDefaultAddressIndex()));
+                    BitcoinWallet wallet = userPojo.getWallet();
+                    BlockChain newBlockChain = new BlockChain(nonce, wallet.getBitcoinAddresses().get(wallet
+                            .getDefaultAddressIndex()), wallet.getPublicKeys().get(wallet.getDefaultAddressIndex()));
                     Chain chainEntity = new Chain(nonce);
                     chainMapper.save(chainEntity);
                     ChainsUtil.serializeBlockChain(newBlockChain);
@@ -173,8 +173,8 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(senders.get(0), sender);
         sender.deserializeWallet();
         ArrayList<String> senderBitcoinAddress = sender.getWallet().getBitcoinAddresses();
-        // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
-        // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
+        ArrayList<String> senderPublicKeys = sender.getWallet().getPublicKeys();
+        ArrayList<String> senderPrivateKeys = sender.getWallet().getPrivateKeys();
         String[] recipientNames = new String[transferAccountVO.getRecipientNames().size()];
         Double[] moneyNeedGive = new Double[transferAccountVO.getMoneys().size()];
         for (int i = 0; i < recipientNames.length; i++) {
@@ -193,21 +193,32 @@ public class UserServiceImpl implements UserService {
             int defaultAddressIndex = recipient.getWallet().getDefaultAddressIndex();
             ArrayList<String> recipientBitcoinAddress = recipient.getWallet().getBitcoinAddresses();
             String recipientAddress = recipientBitcoinAddress.get(defaultAddressIndex);
+            String recipientPublicKey = recipient.getWallet().getPublicKeys().get(defaultAddressIndex);
             // 遍历付款人的地址
-            for (String senderAddress : senderBitcoinAddress) {
+            for (int j = 0; j < senderBitcoinAddress.size(); j++) {
                 // 查询该地址有多少钱
-                double moneyOfSender = ChainsUtil.getAllBalance(senderAddress);
+                double moneyOfSender = ChainsUtil.getAllBalance(senderBitcoinAddress.get(j));
                 if (moneyOfSender == 0) {
                     continue;
                 }
                 // 该地址余额小moneyNeedGive,则把所有钱全转过去,同时更新moneyWillGive
                 if (moneyOfSender <= moneyNeed) {
-                    ChainsUtil.addNormalTransaction(senderAddress, recipientAddress, moneyOfSender);
+                    try {
+                        ChainsUtil.addNormalTransaction(senderBitcoinAddress.get(j), recipientAddress,
+                                senderPublicKeys.get(j), recipientPublicKey, senderPrivateKeys.get(j), moneyOfSender);
+                    } catch (RuntimeException e) {
+                        return ResponseVO.buildFailure(e.getMessage());
+                    }
                     moneyNeed -= moneyOfSender;
                 }
                 // 该地址余额大于moneyWillGive，则转等额的钱即可，同时到该收款人的转账完成
                 if (moneyOfSender > moneyNeed) {
-                    ChainsUtil.addNormalTransaction(senderAddress, recipientAddress, moneyNeed);
+                    try {
+                        ChainsUtil.addNormalTransaction(senderBitcoinAddress.get(j), recipientAddress,
+                                senderPublicKeys.get(j), recipientPublicKey, senderPrivateKeys.get(j), moneyNeed);
+                    } catch (RuntimeException e) {
+                        return ResponseVO.buildFailure(e.getMessage());
+                    }
                     break;
                 }
             }

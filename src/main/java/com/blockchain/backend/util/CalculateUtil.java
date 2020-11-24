@@ -98,4 +98,8 @@ public class CalculateUtil {
         return Hex.toHexString(rsData);
     }
 
+    public static boolean isCorrespondingKey(String privateKey, String publicKey) {
+        return true;
+    }
+
 }
