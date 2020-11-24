@@ -39,7 +39,7 @@ public class ChainsUtil {
     /**
      * 目标字符串
      */
-    private static final String AIMED_STR = repeat(difficulty);
+    private static String aimedStr = repeat(difficulty);
 
     /**
      * 给每条区块链增加一个区块
@@ -76,6 +76,7 @@ public class ChainsUtil {
      */
     public static void setDifficulty(int dif) {
         difficulty = dif;
+        repeat(difficulty);
     }
 
     public static int getDifficulty() {
@@ -86,7 +87,7 @@ public class ChainsUtil {
      * 获取目标字符串
      */
     public static String getAimedStr() {
-        return AIMED_STR;
+        return aimedStr;
     }
 
     /**
@@ -96,7 +97,7 @@ public class ChainsUtil {
      * @return 重复后字符串
      */
     private static String repeat(int repeat) {
-        final StringBuilder buf = new StringBuilder();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < repeat; i++) {
             buf.append("0");
         }
@@ -137,7 +138,7 @@ public class ChainsUtil {
     /**
      * 序列化全部区块链
      */
-    public static void serializeAllChains() {
+    public static synchronized void serializeAllChains() {
         for (BlockChain blockchain : BLOCKCHAINS) {
             serializeBlockChain(blockchain);
         }
@@ -146,7 +147,7 @@ public class ChainsUtil {
     /**
      * 反序列化全部区块链
      */
-    public static void deserializeAllChains(List<Long> nonces) {
+    public static synchronized void deserializeAllChains(List<Long> nonces) {
         for (Long nonce : nonces) {
             deserializeBlockChain(nonce);
         }
@@ -157,7 +158,7 @@ public class ChainsUtil {
      *
      * @param chain 链
      */
-    public static void serializeBlockChain(BlockChain chain) {
+    public static synchronized void serializeBlockChain(BlockChain chain) {
         try (FileOutputStream fos = new FileOutputStream(
                 CHAIN_FILEPATH_ROOT + chain.getLastBlock().getBlockHead().getNonce() + ".txt");
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -173,7 +174,7 @@ public class ChainsUtil {
      *
      * @param nonce 随机数
      */
-    private static void deserializeBlockChain(long nonce) {
+    public static synchronized void deserializeBlockChain(long nonce) {
         try (FileInputStream fis = new FileInputStream(CHAIN_FILEPATH_ROOT + nonce + ".txt");
              ObjectInputStream ois = new ObjectInputStream(fis)) {
             BlockChain chain = (BlockChain) ois.readObject();
