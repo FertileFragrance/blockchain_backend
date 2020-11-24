@@ -110,21 +110,20 @@ public class UserServiceImpl implements UserService {
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
-        BitcoinWallet bitcoinWallet=userPojo.getWallet();
-        int defaultIndex=bitcoinWallet.getDefaultAddressIndex();
-        String minerAddress=bitcoinWallet.getBitcoinAddresses().get(defaultIndex);
+        BitcoinWallet bitcoinWallet = userPojo.getWallet();
+        int defaultIndex = bitcoinWallet.getDefaultAddressIndex();
+        String minerAddress = bitcoinWallet.getBitcoinAddresses().get(defaultIndex);
         long nonce = 0;
         // 十六进制的hash
         String hexHash;
         List<Chain> chains;
         while (true) {
-            hexHash = CalculateUtil.applySha256(CalculateUtil.applySha256(Long.toString(nonce)+"65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699"));
+            hexHash = CalculateUtil.applySha256(CalculateUtil.applySha256(Long.toString(nonce) + "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699"));
             if (hexHash.startsWith(ChainsUtil.getAimedStr())) {
                 chains = chainMapper.findByNonce(nonce);
                 if (chains.isEmpty()) {
                     BlockChain newBlockChain = new BlockChain(nonce, userPojo.getWallet()
                             .getBitcoinAddresses().get(userPojo.getWallet().getDefaultAddressIndex()));
-                    newBlockChain.addMinerTransaction(minerAddress);
                     Chain chainEntity = new Chain(nonce);
                     chainMapper.save(chainEntity);
                     ChainsUtil.serializeBlockChain(newBlockChain);

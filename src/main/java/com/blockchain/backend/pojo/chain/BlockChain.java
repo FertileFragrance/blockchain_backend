@@ -90,20 +90,23 @@ public class BlockChain implements Serializable {
         List<Transaction> transactions = merkleTree.getTransactions();
         List<String> transactionId = new ArrayList<>();
         // 遍历交易,记录花费过的output
-        for (int i = 1; i < transactions.size(); i++) {
+        for (int i = 0; i < transactions.size(); i++) {
             Transaction transaction = transactions.get(i);
             TransactionInput transactionInput = transaction.getTransInput();
+            if (transactionInput == null) {
+                continue;
+            }
             // 是该地址发出的input，故该input指向的output被使用过了
-            if (transactionInput.getSenderAddress().equals(address)) {
+            if (address.equals(transactionInput.getSenderAddress())) {
                 transactionId.add(transactionInput.getTransactionId());
             }
         }
         // 遍历交易输出，把未使用过的output加进去
-        for (int i = 1; i < transactions.size(); i++) {
+        for (int i = 0; i < transactions.size(); i++) {
             boolean isUse = false;
             Transaction transaction = transactions.get(i);
             // 不是到address的output
-            if (!transaction.getTransOutput().getRecipientAddress().equals(address)) {
+            if (!address.equals(transaction.getTransOutput().getRecipientAddress())) {
                 continue;
             }
             for (int j = 0; j < transactionId.size() - 1; j++) {
@@ -157,7 +160,7 @@ public class BlockChain implements Serializable {
         double valueFound = 0;
         A:
         // 遍历交易  从1开始遍历（不知道为什么会在创建区块链时merkleTree里会自己加一个莫名奇妙的交易）
-        for (int i = 1; i < transactionList.size(); i++) {
+        for (int i = 0; i < transactionList.size(); i++) {
             Transaction thisTransaction = transactionList.get(i);
             TransactionOutput transactionOutputFalse = thisTransaction.getTransOutput();
             // 不是sender的比特币，跳过
@@ -214,7 +217,6 @@ public class BlockChain implements Serializable {
         toRecipient[toRecipient.length - 1] = new TransactionOutput(sender);
         Transaction lastTransaction = new Transaction(transactionInput[transactionInput.length - 1], toRecipient[toRecipient.length - 1], changeBack);
         transactionWillAdd[transactionWillAdd.length - 1] = lastTransaction;
-
         // 添加交易
         blockChain.addTransaction(transactionWillAdd);
 
