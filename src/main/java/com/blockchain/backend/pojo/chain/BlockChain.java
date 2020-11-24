@@ -138,8 +138,13 @@ public class BlockChain implements Serializable {
         // 得到最新区块
         Block last = blockChain.getLastBlock();
         // 最新区块中的树包含了最全的交易信息，相当于最新的账本
-        List<Transaction> transactionList = last.getMerkleTree().getTransactions();
-        // 钱不够，交易失败
+        //List<Transaction> transactionList = last.getMerkleTree().getTransactions();
+        Transaction[] transactions=blockChain.getMyUTXOs(sender);
+        List<Transaction> transactionList=new ArrayList<>();
+        for(int i=0;i<transactions.length;i++){
+            transactionList.add(transactions[i]);
+        }
+    // 钱不够，交易失败
         double resAmount = blockChain.getBalance(sender);
         if (resAmount < amount) {
             System.out.println("余额不足，交易失败");
