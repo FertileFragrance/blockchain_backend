@@ -80,45 +80,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseVO mine(UserVO userVO) {
-        // TODO 在ChainsUtil类中设定挖矿标准后完成此方法
-        /*
-        String hexHash;
-        Random random = new Random();
-        ArrayList<Long> existedNonce = new ArrayList<>();
-        long nonce;
-        String blockhead = "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699";
-
-        while1:
-        do {
-            nonce = random.nextLong();
-            hexHash = CalculateUtil.applySha256(CalculateUtil.applySha256(Long.toString(nonce)+blockhead));
-            System.out.println(nonce);
-            if (existedNonce.size()!=0) {
-                for (long existedNon: existedNonce) {
-                    if (existedNon == nonce) {
-                        continue while1;
-                    }
-                }
-            }
-        } while (!hexHash.startsWith(ChainsUtil.getAimedStr()));
-        existedNonce.add(nonce);
-        BlockChain newBlockChain = new BlockChain(nonce, hexHash);
-        return ResponseVO.buildSuccess("mine success", newBlockChain.getLastBlock().getBlockHead().getNonce());
-         */
         List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
         assert users.size() == 1;
         User userPojo = new User();
         BeanUtils.copyProperties(users.get(0), userPojo);
         userPojo.deserializeWallet();
-        BitcoinWallet bitcoinWallet = userPojo.getWallet();
-        int defaultIndex = bitcoinWallet.getDefaultAddressIndex();
-        String minerAddress = bitcoinWallet.getBitcoinAddresses().get(defaultIndex);
         long nonce = 0;
-        // 十六进制的hash
         String hexHash;
         List<Chain> chains;
         while (true) {
-            hexHash = CalculateUtil.applySha256(CalculateUtil.applySha256(Long.toString(nonce) + "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699"));
+            hexHash = CalculateUtil.applySha256(CalculateUtil
+                    .applySha256(nonce + "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699"));
             if (hexHash.startsWith(ChainsUtil.getAimedStr())) {
                 chains = chainMapper.findByNonce(nonce);
                 if (chains.isEmpty()) {
@@ -203,24 +175,26 @@ public class UserServiceImpl implements UserService {
         ArrayList<String> senderBitcoinAddress = sender.getWallet().getBitcoinAddresses();
         // TODO 在BlockChain类和ChainsUtil中完成在单条链上和所有链的增加交易后，完成此方法
         // TODO 此方法统筹发送者不同的地址余额生成各个链上要增加的交易
-        String[] recipientNames = transferAccountVO.getRecipientNames();
-        Double[] moneyNeedGive = transferAccountVO.getMoneys();
+        String[] recipientNames = new String[transferAccountVO.getRecipientNames().size()];
+        Double[] moneyNeedGive = new Double[transferAccountVO.getMoneys().size()];
+        for (int i = 0; i < recipientNames.length; i++) {
+            recipientNames[i] = transferAccountVO.getRecipientNames().get(i);
+            moneyNeedGive[i] = transferAccountVO.getMoneys().get(i);
+        }
         // 遍历收款人，每个收款人都要收到一笔转账
         for (int i = 0; i < recipientNames.length; i++) {
-            String recipentName = recipientNames[i];
+            String recipientName = recipientNames[i];
             double moneyNeed = moneyNeedGive[i];
             // 获得默认收款地址
-            List<com.blockchain.backend.entity.User> recipients = userMapper.findByUsername(recipentName);
-            String recipientAddress = "";
+            List<com.blockchain.backend.entity.User> recipients = userMapper.findByUsername(recipientName);
             User recipient = new User();
-            BeanUtils.copyProperties(recipients.get(i), recipient);
+            BeanUtils.copyProperties(recipients.get(0), recipient);
             recipient.deserializeWallet();
             int defaultAddressIndex = recipient.getWallet().getDefaultAddressIndex();
             ArrayList<String> recipientBitcoinAddress = recipient.getWallet().getBitcoinAddresses();
-            recipientAddress = recipientBitcoinAddress.get(defaultAddressIndex);
+            String recipientAddress = recipientBitcoinAddress.get(defaultAddressIndex);
             // 遍历付款人的地址
-            for (int j = 0; j < senderBitcoinAddress.size(); j++) {
-                String senderAddress = senderBitcoinAddress.get(j);
+            for (String senderAddress : senderBitcoinAddress) {
                 // 查询该地址有多少钱
                 double moneyOfSender = ChainsUtil.getAllBalance(senderAddress);
                 if (moneyOfSender == 0) {
@@ -234,12 +208,21 @@ public class UserServiceImpl implements UserService {
                 // 该地址余额大于moneyWillGive，则转等额的钱即可，同时到该收款人的转账完成
                 if (moneyOfSender > moneyNeed) {
                     ChainsUtil.addNormalTransaction(senderAddress, recipientAddress, moneyNeed);
-                    moneyNeed = 0;
                     break;
                 }
             }
         }
-        return null;
+        for (int i = 0; i < ChainsUtil.getBlockchains().size(); i++) {
+            try (FileWriter fw = new FileWriter(ChainsUtil.CHAIN_FILEPATH_ROOT + ChainsUtil
+                    .getBlockchains().get(i).getLastBlock().getBlockHead().getNonce() + ".txt", false)) {
+                fw.flush();
+            } catch (IOException e) {
+                System.err.println("rewrite file error!");
+                return ResponseVO.buildFailure("transfer account failure");
+            }
+        }
+        ChainsUtil.serializeAllChains();
+        return ResponseVO.buildSuccess("transfer account success");
     }
 
     @Override

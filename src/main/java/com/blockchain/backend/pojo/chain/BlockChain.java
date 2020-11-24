@@ -77,7 +77,6 @@ public class BlockChain implements Serializable {
 
     /**
      * 找到目前未花费的output
-     * TODO need to correct
      *
      * @param address 发起查询的用户地址
      * @return 该条链上的未花费的交易
@@ -90,8 +89,7 @@ public class BlockChain implements Serializable {
         List<Transaction> transactions = merkleTree.getTransactions();
         List<String> transactionId = new ArrayList<>();
         // 遍历交易,记录花费过的output
-        for (int i = 0; i < transactions.size(); i++) {
-            Transaction transaction = transactions.get(i);
+        for (Transaction transaction : transactions) {
             TransactionInput transactionInput = transaction.getTransInput();
             if (transactionInput == null) {
                 continue;
@@ -102,32 +100,29 @@ public class BlockChain implements Serializable {
             }
         }
         // 遍历交易输出，把未使用过的output加进去
-        for (int i = 0; i < transactions.size(); i++) {
+        for (Transaction value : transactions) {
             boolean isUse = false;
-            Transaction transaction = transactions.get(i);
             // 不是到address的output
-            if (!address.equals(transaction.getTransOutput().getRecipientAddress())) {
+            if (!address.equals(value.getTransOutput().getRecipientAddress())) {
                 continue;
             }
             for (int j = 0; j < transactionId.size() - 1; j++) {
                 // 该交易被使用过
-                if (transaction.getTransactionId().equals(transactionId.get(j))) {
+                if (value.getTransactionId().equals(transactionId.get(j))) {
                     isUse = true;
                     break;
                 }
             }
             // 没用过
             if (!isUse) {
-                unspent.add(transaction);
+                unspent.add(value);
             }
         }
-
         Transaction[] unspentTransaction = new Transaction[unspent.size()];
         for (int i = 0; i < unspentTransaction.length; i++) {
             unspentTransaction[i] = unspent.get(i);
         }
         return unspentTransaction;
-
     }
 
     /**
@@ -141,10 +136,9 @@ public class BlockChain implements Serializable {
     public void addNormalTransaction(String sender, String recipient, double amount, BlockChain blockChain) {
         System.out.println("添加普通交易：   " + sender + "---->" + recipient + "   转账金额为： " + amount);
         // 得到最新区块
-        Block lastBlock = blockChain.getLastBlock();
-        MerkleTree merkleTree = lastBlock.getMerkleTree();
+        Block last = blockChain.getLastBlock();
         // 最新区块中的树包含了最全的交易信息，相当于最新的账本
-        List<Transaction> transactionList = lastBlock.getMerkleTree().getTransactions();
+        List<Transaction> transactionList = last.getMerkleTree().getTransactions();
         // 钱不够，交易失败
         double resAmount = blockChain.getBalance(sender);
         if (resAmount < amount) {
@@ -160,8 +154,7 @@ public class BlockChain implements Serializable {
         double valueFound = 0;
         A:
         // 遍历交易  从1开始遍历（不知道为什么会在创建区块链时merkleTree里会自己加一个莫名奇妙的交易）
-        for (int i = 0; i < transactionList.size(); i++) {
-            Transaction thisTransaction = transactionList.get(i);
+        for (Transaction thisTransaction : transactionList) {
             TransactionOutput transactionOutputFalse = thisTransaction.getTransOutput();
             // 不是sender的比特币，跳过
             if (!transactionOutputFalse.getRecipientAddress().equals(sender)) {
@@ -192,7 +185,6 @@ public class BlockChain implements Serializable {
         // 创建属于收款人的output,即到收款人去的output,最后2笔单独处理，因为可能会有找零
         // 多一笔找零(到付款人地址去），找零可以是0
         TransactionOutput[] toRecipient = new TransactionOutput[willPay.size() + 1];
-
         Transaction[] transactionWillAdd = new Transaction[toRecipient.length];
         // 最后一笔willPay需要拆分成两个交易
         for (int i = 0; i < toRecipient.length - 2; i++) {
@@ -219,14 +211,6 @@ public class BlockChain implements Serializable {
         transactionWillAdd[transactionWillAdd.length - 1] = lastTransaction;
         // 添加交易
         blockChain.addTransaction(transactionWillAdd);
-
-    }
-
-    public void addMinerTransaction(String minerAddress) {
-        Transaction transaction = new Transaction(minerAddress);
-        transaction = Transaction.newMinerTransaction(transaction);
-        Block last = this.getLastBlock();
-        last.addTransaction(transaction);
     }
 
 }

@@ -2,6 +2,8 @@ package com.blockchain.backend.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author njuselhx
  */
@@ -9,7 +11,7 @@ import lombok.Data;
 public class TransferAccountVO {
 
     private String senderName;
-    private String[] recipientNames;
-    private Double[] moneys;
+    private List<String> recipientNames;
+    private List<Double> moneys;
 
 }

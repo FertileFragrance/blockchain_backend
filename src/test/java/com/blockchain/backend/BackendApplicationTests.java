@@ -4,8 +4,11 @@ import com.blockchain.backend.dao.ChainMapper;
 import com.blockchain.backend.dao.UserMapper;
 import com.blockchain.backend.pojo.chain.BlockChain;
 import com.blockchain.backend.pojo.chain.block.Block;
+import com.blockchain.backend.pojo.user.User;
 import com.blockchain.backend.util.ChainsUtil;
+import com.blockchain.backend.vo.UserVO;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -48,6 +51,21 @@ class BackendApplicationTests {
         nonces.add(596138L);
         ChainsUtil.deserializeAllChains(nonces);
         System.out.println(ChainsUtil.getBlockchains().get(0).getLastBlock().getMerkleTree().getTransactions().size());
+    }
+
+    @Test
+    void testTransferAccount() {
+        UserVO userVO = new UserVO();
+        userVO.setUsername("test");
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
+        assert users.size() == 1;
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        List<Long> nonces = new ArrayList<>();
+        nonces.add(1153627L);
+        nonces.add(3911299L);
+        ChainsUtil.deserializeAllChains(nonces);
     }
 
 }
