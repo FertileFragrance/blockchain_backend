@@ -111,4 +111,15 @@ public class UserController {
         return this.userService.setDefaultAddress(setDefaultAddressVO);
     }
 
+    /**
+     * 处理用户查询密钥对数量请求
+     *
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    @GetMapping("/queryKeyNumbers")
+    public ResponseVO queryKeyNumbers(UserVO userVO) {
+        return this.userService.queryKeyNumbers(userVO);
+    }
+
 }

@@ -253,4 +253,14 @@ public class UserServiceImpl implements UserService {
         return ResponseVO.buildSuccess("set default address success");
     }
 
+    @Override
+    public ResponseVO queryKeyNumbers(UserVO userVO) {
+        List<com.blockchain.backend.entity.User> users = userMapper.findByUsername(userVO.getUsername());
+        assert users.size() == 1;
+        User userPojo = new User();
+        BeanUtils.copyProperties(users.get(0), userPojo);
+        userPojo.deserializeWallet();
+        return ResponseVO.buildSuccess("query key numbers success", userPojo.getWallet().getPublicKeys().size());
+    }
+
 }

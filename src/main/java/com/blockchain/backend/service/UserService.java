@@ -73,4 +73,12 @@ public interface UserService {
      */
     ResponseVO setDefaultAddress(SetDefaultAddressVO setDefaultAddressVO);
 
+    /**
+     * 用户查询密钥对数量
+     *
+     * @param userVO 视图层用户对象
+     * @return 包装好的视图层回应对象
+     */
+    ResponseVO queryKeyNumbers(UserVO userVO);
+
 }
