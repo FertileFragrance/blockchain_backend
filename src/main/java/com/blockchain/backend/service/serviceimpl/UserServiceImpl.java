@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
         List<Chain> chains;
         while (true) {
             hexHash = CalculateUtil.applySha256(CalculateUtil
-                    .applySha256(nonce + "65da5cs650c8eca98se5d4a654cc8e4asc8dca60aa6c486699"));
+                    .applySha256(nonce + ChainsUtil.getLastBlockHash()));
             if (hexHash.startsWith(ChainsUtil.getAimedStr())) {
                 chains = chainMapper.findByNonce(nonce);
                 if (chains.isEmpty()) {
@@ -108,6 +108,8 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
+
+
 
     @Override
     public ResponseVO queryBalance(UserVO userVO) {

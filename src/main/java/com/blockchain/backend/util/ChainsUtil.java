@@ -193,4 +193,12 @@ public class ChainsUtil {
         }
     }
 
+    /**
+     * 获取最新区块的head hash
+     */
+    public static String getLastBlockHash() {
+        //设置为0，因为只有一条链
+        return ChainsUtil.getBlockchains().get(0).getLastBlock().currentBlockHashPointer;
+    }
+
 }
